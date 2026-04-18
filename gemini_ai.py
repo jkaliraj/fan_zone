@@ -53,9 +53,21 @@ If asked about live data, explain that users can check the Live Scores tab for r
 async def ai_match_analysis(match_data: dict) -> str:
     """Generate AI analysis of a match."""
     client = _get_client()
-    prompt = f"""Analyze this cricket match and give a brief, exciting summary for fans.
-Focus on key moments, standout performances, and what made it special.
-Keep it to 3-4 sentences, make it engaging.
+    prompt = f"""You are a world-class cricket analyst providing expert match analysis for passionate fans.
+
+Analyze this cricket match comprehensively. Structure your response with these sections:
+
+**Match Summary** — 2-3 sentences on the overall result and context.
+
+**Key Performances** — Highlight the top 2-3 standout players (batting, bowling, fielding). Mention specific stats where available.
+
+**Turning Points** — Identify the pivotal moments that decided the match (key wickets, partnerships, powerplay performance, death overs).
+
+**Tactical Insights** — Comment on captaincy decisions, team strategy, toss impact, or bowling changes that mattered.
+
+**Fan Verdict** — A punchy 1-line verdict for fans (exciting, disappointing, historic, etc.)
+
+Keep it around 200-250 words. Use cricket terminology naturally. Be specific with numbers from the data. Make it engaging and analytical, not generic.
 
 Match data: {match_data}"""
 
@@ -63,9 +75,9 @@ Match data: {match_data}"""
         model=MODEL,
         contents=prompt,
         config=types.GenerateContentConfig(
-            system_instruction="You are an expert cricket analyst writing for passionate fans.",
-            temperature=0.8,
-            max_output_tokens=300,
+            system_instruction="You are an expert cricket analyst and commentator. Provide insightful, data-driven analysis that passionate cricket fans would appreciate. Use the actual match data provided — never make up stats.",
+            temperature=0.7,
+            max_output_tokens=800,
         ),
     )
     return response.text

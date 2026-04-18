@@ -200,6 +200,30 @@ def add_reaction(discussion_id: str, emoji: str) -> dict:
 def create_connection(user_id_1: str, user_id_2: str, match_id: str,
                       reason: str = "") -> dict:
     """Create a fan connection."""
+    # Prevent self-connection
+    if user_id_1 == user_id_2:
+        return {"error": "You can't connect with yourself!"}
+
+    # Check for duplicate connection
+    db = _get_db()
+    if db:
+        existing = db.collection("connections") \
+            .where("user_id_1", "==", user_id_1) \
+            .where("user_id_2", "==", user_id_2).limit(1).get()
+        if list(existing):
+            return {"error": "You're already connected with this fan!"}
+        # Check reverse direction too
+        existing_rev = db.collection("connections") \
+            .where("user_id_1", "==", user_id_2) \
+            .where("user_id_2", "==", user_id_1).limit(1).get()
+        if list(existing_rev):
+            return {"error": "You're already connected with this fan!"}
+    else:
+        for conn in _local_store["connections"].values():
+            if (conn.get("user_id_1") == user_id_1 and conn.get("user_id_2") == user_id_2) or \
+               (conn.get("user_id_1") == user_id_2 and conn.get("user_id_2") == user_id_1):
+                return {"error": "You're already connected with this fan!"}
+
     conn_id = f"conn_{uuid.uuid4().hex[:8]}"
     connection = {
         "connection_id": conn_id,
@@ -210,7 +234,6 @@ def create_connection(user_id_1: str, user_id_2: str, match_id: str,
         "status": "active",
         "created_at": _now_iso(),
     }
-    db = _get_db()
     if db:
         db.collection("connections").document(conn_id).set(connection)
     else:

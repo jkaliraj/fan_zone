@@ -134,7 +134,23 @@
         <div class="section-header">
             <h2>👥 Fan Zone</h2>
         </div>
+
+        <!-- Profile Card (shown when logged in) -->
+        <div class="card fan-profile-card hidden" id="fanProfileCard">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">?</div>
+                <div class="profile-info">
+                    <h3 id="profileName">—</h3>
+                    <span class="profile-team-badge" id="profileTeam">—</span>
+                    <span class="profile-location" id="profileLocation"></span>
+                </div>
+                <button class="btn btn-sm btn-outline btn-danger" onclick="logoutFan()">Logout</button>
+            </div>
+            <p class="profile-bio" id="profileBio"></p>
+        </div>
+
         <div class="fan-grid">
+            <!-- Register Card (hidden when logged in) -->
             <div class="card fan-register-card" id="fanRegisterCard">
                 <h3>🏏 Join FanZone</h3>
                 <p>Register with your team loyalty to connect with fellow fans</p>
@@ -176,46 +192,39 @@
         </div>
         <div class="card" style="margin-top:1rem;">
             <h3>🤝 My Connections</h3>
-            <div class="search-bar">
-                <input type="text" id="connUserId" placeholder="Your username" class="input">
-                <button class="btn btn-primary" onclick="loadConnections()">View</button>
+            <div id="connectionsList">
+                <div class="empty-state">Join FanZone to see your connections</div>
             </div>
-            <div id="connectionsList"></div>
         </div>
     </section>
 
     <!-- ── GEMINI AI ─────────────────────────────────────────── -->
     <section class="section hidden" id="sectionAi">
-        <div class="section-header">
-            <h2>✨ Gemini AI</h2>
-            <span class="gemini-badge">✨ Powered by Gemini 2.5 Flash</span>
-        </div>
-
-        <div class="agent-info-bar">
-            <div class="agent-chip"><span class="agent-dot commander"></span>Commander</div>
-            <div class="agent-chip"><span class="agent-dot match"></span>Match Agent</div>
-            <div class="agent-chip"><span class="agent-dot fan"></span>Fan Agent</div>
-            <div class="agent-chip"><span class="agent-dot discuss"></span>Discussion Agent</div>
-            <div class="agent-chip"><span class="agent-dot connect"></span>Connection Agent</div>
-        </div>
-
-        <div class="chat-container agent-chat-container">
+        <div class="ai-chat-wrapper">
+            <div class="ai-chat-header">
+                <div class="ai-chat-title">
+                    <span class="ai-logo">✨</span>
+                    <div>
+                        <h2 style="margin:0;font-size:1.1rem;">Gemini AI</h2>
+                        <span class="ai-status">Powered by Gemini 2.5 Flash</span>
+                    </div>
+                </div>
+            </div>
             <div class="chat-messages" id="agentMessages">
                 <div class="chat-msg bot">
                     <div class="msg-avatar">✨</div>
                     <div class="msg-bubble">
-                        Welcome to <strong>Gemini AI!</strong> Powered by <strong>Google Gemini 2.5 Flash</strong>:<br><br>
-                        🏏 <strong>Live Scores &amp; Stats</strong> — IPL &amp; India match scores, player stats, series info<br>
-                        👥 <strong>Fan Community</strong> — Register, find fans by team, discover similar fans<br>
-                        💬 <strong>Discussions</strong> — Start threads, reply, react to matches<br>
-                        🤝 <strong>Connections</strong> — Connect with fans over shared cricket moments<br><br>
-                        Try: <em>"Show me live IPL scores"</em>, <em>"Find CSK fans"</em>, <em>"Tell me about Virat Kohli"</em>, <em>"Analyze today's match"</em>
+                        Hey! I'm your cricket AI assistant 🏏<br><br>
+                        Ask me anything — live scores, player stats, IPL updates, or connect with fans.<br><br>
+                        <span style="color:var(--text-muted);font-size:0.8rem;">Try: "Show me live scores", "Tell me about Virat Kohli", "Find CSK fans"</span>
                     </div>
                 </div>
             </div>
-            <div class="chat-input-area">
-                <input type="text" id="agentInput" placeholder="Ask Gemini anything about Indian cricket..." class="input" onkeydown="if(event.key==='Enter')sendAgentChat()">
-                <button class="btn btn-primary" onclick="sendAgentChat()">Send</button>
+            <div class="ai-chat-input">
+                <input type="text" id="agentInput" placeholder="Ask about cricket..." class="input" onkeydown="if(event.key==='Enter')sendAgentChat()">
+                <button class="btn btn-primary ai-send-btn" onclick="sendAgentChat()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+                </button>
             </div>
         </div>
     </section>

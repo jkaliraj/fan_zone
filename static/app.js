@@ -60,22 +60,48 @@ function switchSection(section) {
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     document.querySelector(`.nav-link[data-section="${section}"]`)?.classList.add('active');
 
-    // Hide all sections
-    document.getElementById('heroSection').classList.toggle('hidden', section !== 'live');
-    ['Live', 'Matches', 'Discuss', 'Fans', 'Ai'].forEach(s => {
-        const el = document.getElementById(`section${s}`);
-        if (el) el.classList.add('hidden');
+    // Fade out all visible sections first
+    const allSections = ['heroSection', 'sectionLive', 'sectionMatches', 'sectionDiscuss', 'sectionFans', 'sectionAi'];
+    allSections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !el.classList.contains('hidden')) {
+            el.classList.add('section-exit');
+        }
     });
 
-    // Show target
-    const map = { live: 'Live', matches: 'Matches', discuss: 'Discuss', fans: 'Fans', ai: 'Ai' };
-    const target = document.getElementById(`section${map[section]}`);
-    if (target) target.classList.remove('hidden');
+    // After exit animation, swap sections
+    setTimeout(() => {
+        // Hide hero
+        document.getElementById('heroSection').classList.toggle('hidden', section !== 'live');
+        if (section === 'live') {
+            document.getElementById('heroSection').classList.remove('section-exit');
+            document.getElementById('heroSection').classList.add('section-enter');
+        }
 
-    // Load data
-    if (section === 'live') loadLiveScores();
-    if (section === 'matches') loadRecentMatches();
-    if (section === 'discuss') loadDiscussPage();
+        // Hide/show sections
+        ['Live', 'Matches', 'Discuss', 'Fans', 'Ai'].forEach(s => {
+            const el = document.getElementById(`section${s}`);
+            if (el) {
+                el.classList.add('hidden');
+                el.classList.remove('section-exit', 'section-enter');
+            }
+        });
+
+        const map = { live: 'Live', matches: 'Matches', discuss: 'Discuss', fans: 'Fans', ai: 'Ai' };
+        const target = document.getElementById(`section${map[section]}`);
+        if (target) {
+            target.classList.remove('hidden');
+            target.classList.add('section-enter');
+            // Remove animation class after it plays
+            setTimeout(() => target.classList.remove('section-enter'), 350);
+        }
+
+        // Load data
+        if (section === 'live') loadLiveScores();
+        if (section === 'matches') loadRecentMatches();
+        if (section === 'discuss') loadDiscussPage();
+        if (section === 'fans') loadFansPage();
+    }, 150);
 }
 
 // ── API Helper ───────────────────────────────────────────────
@@ -256,21 +282,24 @@ function closeModal() {
 // ── AI Analysis ──────────────────────────────────────────────
 async function getAIAnalysis(matchId) {
     const target = document.getElementById('modalAnalysis') || null;
-    if (target) target.innerHTML = '<div class="loading-spinner">Gemini is analyzing...</div>';
+    if (target) target.innerHTML = '<div class="loading-spinner">Gemini is analyzing this match...</div>';
 
     const data = await apiFetch(`/match/${matchId}/analysis`);
 
     if (data.analysis) {
         const html = `
-            <div class="card" style="border-color: var(--accent); background: var(--accent-glow);">
-                <div style="font-size: 0.75rem; color: var(--accent); font-weight: 600; margin-bottom: 0.5rem;">🤖 Gemini AI Analysis</div>
-                <p style="font-size: 0.875rem; line-height: 1.6;">${escHtml(data.analysis)}</p>
+            <div class="ai-analysis-card">
+                <div class="ai-analysis-header">
+                    <span class="ai-logo-sm">✨</span>
+                    <span>Gemini AI Match Analysis</span>
+                </div>
+                <div class="ai-analysis-body">${formatAIResponse(data.analysis)}</div>
             </div>
         `;
         if (target) {
             target.innerHTML = html;
         } else {
-            showToast(data.analysis, 'info');
+            showToast(data.analysis.substring(0, 200), 'info');
         }
     } else {
         showToast(data.error || 'AI analysis unavailable', 'error');
@@ -505,6 +534,26 @@ async function replyToDiscussion(discId) {
 }
 
 // ── Fan Registration ─────────────────────────────────────────
+function loadFansPage() {
+    if (currentUser) {
+        // Show profile, hide register form
+        document.getElementById('fanRegisterCard').classList.add('hidden');
+        const profileCard = document.getElementById('fanProfileCard');
+        profileCard.classList.remove('hidden');
+        document.getElementById('profileAvatar').textContent = currentUser.display_name?.[0]?.toUpperCase() || '?';
+        document.getElementById('profileName').textContent = currentUser.display_name || currentUser.user_id;
+        document.getElementById('profileTeam').textContent = currentUser.favorite_team || '';
+        document.getElementById('profileLocation').textContent = currentUser.location ? `📍 ${currentUser.location}` : '';
+        document.getElementById('profileBio').textContent = currentUser.bio || '';
+        // Auto-load connections
+        loadConnections();
+    } else {
+        document.getElementById('fanRegisterCard').classList.remove('hidden');
+        document.getElementById('fanProfileCard').classList.add('hidden');
+        document.getElementById('connectionsList').innerHTML = '<div class="empty-state">Join FanZone to see your connections</div>';
+    }
+}
+
 async function registerFan() {
     const userId = document.getElementById('fanUserId').value.trim();
     const displayName = document.getElementById('fanDisplayName').value.trim();
@@ -532,10 +581,19 @@ async function registerFan() {
         currentUser = data;
         localStorage.setItem('fanzone_user', JSON.stringify(data));
         updateNavProfile();
+        loadFansPage();
         showToast(`Welcome to FanZone, ${displayName}! 🏏`, 'success');
     } else {
         showToast('Registration failed', 'error');
     }
+}
+
+function logoutFan() {
+    currentUser = null;
+    localStorage.removeItem('fanzone_user');
+    updateNavProfile();
+    loadFansPage();
+    showToast('Logged out successfully', 'info');
 }
 
 function updateNavProfile() {
@@ -547,10 +605,17 @@ function updateNavProfile() {
             <button class="theme-toggle" onclick="toggleTheme()" title="Switch theme">
                 <span class="theme-icon" id="themeIcon">${themeIcon}</span>
             </button>
-            <div class="user-badge">
+            <div class="user-badge" onclick="switchSection('fans')" style="cursor:pointer;">
                 <span class="team-dot"></span>
                 <span>${escHtml(currentUser.display_name)} • ${escHtml(currentUser.favorite_team)}</span>
             </div>
+        `;
+    } else {
+        container.innerHTML = `
+            <button class="theme-toggle" onclick="toggleTheme()" title="Switch theme">
+                <span class="theme-icon" id="themeIcon">${themeIcon}</span>
+            </button>
+            <button class="btn btn-sm btn-accent" onclick="switchSection('fans')">Join FanZone</button>
         `;
     }
 }
@@ -627,6 +692,11 @@ async function connectWithFan(otherUserId) {
         return;
     }
 
+    if (currentUser.user_id === otherUserId) {
+        showToast("You can't connect with yourself!", 'error');
+        return;
+    }
+
     const data = await apiFetch('/connection/create', {
         method: 'POST',
         body: JSON.stringify({
@@ -637,36 +707,41 @@ async function connectWithFan(otherUserId) {
         }),
     });
 
-    if (data.connection_id) {
+    if (data.error) {
+        showToast(data.error, 'error');
+    } else if (data.connection_id) {
         showToast(`Connected with ${otherUserId}! 🤝`, 'success');
     }
 }
 
 async function loadConnections() {
-    const userId = document.getElementById('connUserId').value.trim() || currentUser?.user_id;
-    if (!userId) {
-        showToast('Enter a username', 'error');
-        return;
-    }
+    const userId = currentUser?.user_id;
+    if (!userId) return;
 
     const list = document.getElementById('connectionsList');
+    list.innerHTML = '<div class="loading-spinner">Loading connections...</div>';
+
     const data = await apiFetch(`/connection/${userId}`);
     const conns = data.connections || [];
 
     if (conns.length === 0) {
-        list.innerHTML = '<div class="empty-state">No connections yet. Find fans and connect!</div>';
+        list.innerHTML = '<div class="empty-state">No connections yet. Explore teams and connect with fans!</div>';
         return;
     }
 
-    list.innerHTML = conns.map(c => `
-        <div class="connection-card">
-            <div class="fan-avatar">🤝</div>
-            <div>
-                <div class="fan-name">${escHtml(c.user_id_1)} ↔ ${escHtml(c.user_id_2)}</div>
-                <div class="conn-reason">${escHtml(c.reason || 'Cricket connection')}</div>
+    list.innerHTML = conns.map(c => {
+        const otherUser = c.user_id_1 === userId ? c.user_id_2 : c.user_id_1;
+        return `
+            <div class="connection-card">
+                <div class="fan-avatar">🤝</div>
+                <div>
+                    <div class="fan-name">Connected with <strong>${escHtml(otherUser)}</strong></div>
+                    <div class="conn-reason">${escHtml(c.reason || 'Cricket connection')}</div>
+                    <div class="conn-date">${timeAgo(c.created_at)}</div>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // ── Gemini AI Chat ──────────────────────────────────────────
@@ -718,6 +793,10 @@ function formatAIResponse(text) {
     // Convert markdown-like formatting to HTML
     return escHtml(text)
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+        .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>');
 }
 
