@@ -13,20 +13,28 @@ _in_memory_store = {
 }
 
 _firestore_client = None
+_firestore_checked = False
 
 
 def _get_db():
     """Get Firestore client, or None if unavailable."""
-    global _firestore_client
-    if _firestore_client is not None:
+    global _firestore_client, _firestore_checked
+    if _firestore_checked:
         return _firestore_client
+    _firestore_checked = True
     try:
         from google.cloud import firestore
-        _firestore_client = firestore.Client(
+        client = firestore.Client(
             project=os.environ.get("GOOGLE_CLOUD_PROJECT", "fanzone-ai")
         )
+        # Quick connectivity check — if Firestore API/DB not provisioned, this fails fast
+        list(client.collection("_health").limit(1).stream())
+        _firestore_client = client
+        print("[Firestore] Connected successfully")
         return _firestore_client
-    except Exception:
+    except Exception as e:
+        print(f"[Firestore] Not available, using in-memory storage: {e}")
+        _firestore_client = None
         return None
 
 
