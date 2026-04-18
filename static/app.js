@@ -384,8 +384,9 @@ function selectDiscussMatch(matchId) {
     if (match) {
         const t1 = match.t1 || (match.teams && match.teams[0]) || '';
         const t2 = match.t2 || (match.teams && match.teams[1]) || '';
+        const series = match.series || match.name || '';
         const preview = document.getElementById('discMatchPreview');
-        preview.innerHTML = `<span class="preview-match-name">${escHtml(t1)} vs ${escHtml(t2)}</span> <span class="preview-match-type">${escHtml(match.matchType || '')} • ${escHtml(match.series || '')}</span>`;
+        preview.innerHTML = `<span class="preview-match-name">${escHtml(t1)} vs ${escHtml(t2)}</span>${series ? ` <span class="preview-match-type">${escHtml(series)}</span>` : ''}`;
     }
 
     loadDiscussions(matchId);
@@ -469,11 +470,14 @@ async function loadDiscussions(matchId) {
     const discs = data.discussions || [];
 
     if (discs.length === 0) {
-        list.innerHTML = '<div class="empty-state">No discussions yet for this match. Be the first to start one!</div>';
+        list.innerHTML = `<div class="empty-state">
+            No discussions yet for this match. Be the first!
+            <br><button class="btn btn-sm btn-primary" style="margin-top:0.5rem;" onclick="toggleNewDiscussion()">+ Start a Thread</button>
+        </div>`;
         return;
     }
 
-    list.innerHTML = discs.map(d => renderDiscussion(d)).join('');
+    list.innerHTML = `<div style="text-align:right;margin-bottom:0.5rem;"><button class="btn btn-sm btn-primary" onclick="toggleNewDiscussion()">+ New Thread</button></div>` + discs.map(d => renderDiscussion(d)).join('');
 }
 
 function renderDiscussion(d) {
