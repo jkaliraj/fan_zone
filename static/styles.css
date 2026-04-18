@@ -683,12 +683,12 @@ select.input {
 
 /* ── Discuss Match Cards ─────────────────────────────────── */
 .discuss-match-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    display: flex;
     gap: 0.75rem;
     margin-bottom: 1rem;
-    max-height: 340px;
-    overflow-y: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.5rem;
     scrollbar-width: thin;
 }
 
@@ -700,6 +700,9 @@ select.input {
     cursor: pointer;
     transition: var(--transition);
     position: relative;
+    min-width: 240px;
+    max-width: 280px;
+    flex-shrink: 0;
 }
 
 .discuss-match-card:hover {
