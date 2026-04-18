@@ -293,3 +293,20 @@ def get_connections(user_id: str) -> list:
             if conn.get("user_id_1") == user_id or conn.get("user_id_2") == user_id:
                 connections.append(conn)
     return connections
+
+
+def delete_connection(connection_id: str) -> dict:
+    """Delete a connection by ID."""
+    db = _get_db()
+    if db:
+        doc_ref = db.collection("connections").document(connection_id)
+        if doc_ref.get().exists:
+            doc_ref.delete()
+        else:
+            return {"error": "Connection not found"}
+    else:
+        if connection_id in _local_store["connections"]:
+            del _local_store["connections"][connection_id]
+        else:
+            return {"error": "Connection not found"}
+    return {"connection_id": connection_id, "status": "deleted"}

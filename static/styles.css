@@ -926,6 +926,26 @@ select.input {
 
 .conn-info { min-width: 0; width: 100%; }
 
+.conn-unfollow {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.3rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, color 0.2s;
+    padding: 0.15rem 0.3rem;
+    border-radius: 50%;
+    line-height: 1;
+}
+
+.connection-card { position: relative; }
+.connection-card:hover .conn-unfollow { opacity: 1; }
+.conn-unfollow:hover { color: var(--g-red); background: rgba(234, 67, 53, 0.1); }
+
 .conn-name {
     font-weight: 600;
     font-size: 0.78rem;

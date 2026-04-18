@@ -30,6 +30,7 @@ from db.firestore import (
     add_reaction,
     create_connection,
     get_connections,
+    delete_connection,
 )
 from gemini_ai import ai_chat, ai_match_analysis, ai_fan_matchmaker, ai_discussion_starter
 from agent_runner import run_agent_chat
@@ -313,6 +314,11 @@ async def api_create_connection(req: ConnectionRequest):
 async def api_connections(user_id: str):
     conns = get_connections(user_id)
     return {"user_id": user_id, "connections": conns, "count": len(conns)}
+
+
+@router.delete("/connection/{connection_id}")
+async def api_delete_connection(connection_id: str):
+    return delete_connection(connection_id)
 
 
 # ── AI Chat (Gemini 2.5 Flash) ───────────────────────────────

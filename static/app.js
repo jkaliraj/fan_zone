@@ -822,16 +822,31 @@ async function loadConnections() {
         const otherUser = c.user_id_1 === userId ? c.user_id_2 : c.user_id_1;
         const initial = (otherUser || '?')[0].toUpperCase();
         const reason = c.reason || 'Cricket connection';
+        const connId = c.connection_id || '';
         return `
-            <div class="connection-card">
+            <div class="connection-card" id="conn-${escHtml(connId)}">
                 <div class="conn-avatar">${escHtml(initial)}</div>
                 <div class="conn-info">
                     <div class="conn-name">${escHtml(otherUser)}</div>
                     <div class="conn-reason">${escHtml(reason)}</div>
                 </div>
+                <button class="conn-unfollow" onclick="unfollowConnection('${escHtml(connId)}')" title="Unfollow">✕</button>
             </div>
         `;
     }).join('');
+}
+
+async function unfollowConnection(connId) {
+    if (!connId) return;
+    const card = document.getElementById(`conn-${connId}`);
+    if (card) {
+        card.style.transition = 'opacity 0.3s, transform 0.3s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.9)';
+    }
+    await apiFetch(`/connection/${connId}`, { method: 'DELETE' });
+    setTimeout(() => { if (card) card.remove(); }, 300);
+    showToast('Connection removed', 'success');
 }
 
 // ── Gemini AI Chat ──────────────────────────────────────────
