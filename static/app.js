@@ -650,8 +650,13 @@ function switchAuthTab(tab) {
 
 async function loginFan() {
     const userId = document.getElementById('loginUserId').value.trim();
+    const password = document.getElementById('loginPassword').value;
     if (!userId) {
         showToast('Please enter your username', 'error');
+        return;
+    }
+    if (!password) {
+        showToast('Please enter your password', 'error');
         return;
     }
     const data = await apiFetch(`/fan/${userId}`);
@@ -671,12 +676,17 @@ async function loginFan() {
 async function registerFan() {
     const userId = document.getElementById('fanUserId').value.trim();
     const displayName = document.getElementById('fanDisplayName').value.trim();
+    const password = document.getElementById('fanPassword').value;
     const team = document.getElementById('fanTeam').value;
     const location = document.getElementById('fanLocation').value.trim();
     const bio = document.getElementById('fanBio').value.trim();
 
     if (!userId || !displayName || !team) {
         showToast('Please enter username, display name, and select a team', 'error');
+        return;
+    }
+    if (!password || password.length < 4) {
+        showToast('Please create a password (min 4 characters)', 'error');
         return;
     }
 
@@ -762,7 +772,6 @@ async function loadTeamInfo(teamCode) {
                 <dt>Captain</dt><dd>${escHtml(data.captain)}</dd>
                 <dt>Titles</dt><dd>${data.titles}</dd>
                 <dt>Home</dt><dd>${escHtml(data.home_ground)}</dd>
-                <dt>Key Players</dt><dd>${players.slice(0, 3).map(p => escHtml(p)).join(', ')}</dd>
             </div>
             <p style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-secondary);">${escHtml(data.fan_base)}</p>
             ${facts.length ? `

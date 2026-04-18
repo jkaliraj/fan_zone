@@ -145,38 +145,40 @@
                 </div>
                 <!-- Login Form -->
                 <div id="authLoginForm">
-                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.75rem;">Welcome back! Enter your username to continue.</p>
-                    <input type="text" id="loginUserId" placeholder="Your username" class="input">
-                    <button class="btn btn-primary btn-block" onclick="loginFan()">Login</button>
+                    <p class="auth-desc">Welcome back! Sign in to continue.</p>
+                    <input type="text" id="loginUserId" placeholder="Username" class="input">
+                    <input type="password" id="loginPassword" placeholder="Password" class="input">
+                    <button class="btn btn-primary btn-block" onclick="loginFan()">Sign In</button>
                 </div>
                 <!-- Register Form -->
                 <div id="authRegisterForm" class="hidden">
-                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.75rem;">New here? Register to connect with fellow fans.</p>
+                    <p class="auth-desc">Create your fan profile to connect.</p>
                     <input type="text" id="fanUserId" placeholder="Choose a username" class="input">
                     <input type="text" id="fanDisplayName" placeholder="Display name" class="input">
+                    <input type="password" id="fanPassword" placeholder="Create a password" class="input">
                     <select id="fanTeam" class="input">
                         <option value="">Select your team</option>
-                        <option value="CSK">🟡 Chennai Super Kings</option>
-                        <option value="MI">🔵 Mumbai Indians</option>
-                        <option value="RCB">🔴 Royal Challengers Bangalore</option>
-                        <option value="KKR">🟣 Kolkata Knight Riders</option>
-                        <option value="RR">🩷 Rajasthan Royals</option>
-                        <option value="DC">🔷 Delhi Capitals</option>
-                        <option value="GT">⬛ Gujarat Titans</option>
-                        <option value="PBKS">🔴 Punjab Kings</option>
-                        <option value="SRH">🟠 Sunrisers Hyderabad</option>
-                        <option value="LSG">🩵 Lucknow Super Giants</option>
+                        <option value="CSK">Chennai Super Kings</option>
+                        <option value="MI">Mumbai Indians</option>
+                        <option value="RCB">Royal Challengers Bangalore</option>
+                        <option value="KKR">Kolkata Knight Riders</option>
+                        <option value="RR">Rajasthan Royals</option>
+                        <option value="DC">Delhi Capitals</option>
+                        <option value="GT">Gujarat Titans</option>
+                        <option value="PBKS">Punjab Kings</option>
+                        <option value="SRH">Sunrisers Hyderabad</option>
+                        <option value="LSG">Lucknow Super Giants</option>
                     </select>
                     <input type="text" id="fanLocation" placeholder="Your city" class="input">
-                    <textarea id="fanBio" placeholder="Your cricket bio..." class="input textarea"></textarea>
-                    <button class="btn btn-primary btn-block" onclick="registerFan()">Register &amp; Join</button>
+                    <textarea id="fanBio" placeholder="Tell us about your cricket fandom..." class="input textarea"></textarea>
+                    <button class="btn btn-primary btn-block" onclick="registerFan()">Create Account</button>
                 </div>
             </div>
         </div>
 
         <!-- Explore Teams (full width below) -->
         <div class="card team-explorer-card" style="margin-top:1rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
                 <h3 style="margin:0;">🔍 Explore Teams</h3>
                 <div class="team-buttons" id="teamButtons">
                     <button class="team-btn team-btn-active" data-team="CSK" style="--team-color:#FFCB05" onclick="loadTeamInfo('CSK')">CSK</button>
