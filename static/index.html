@@ -16,7 +16,7 @@
         <div class="nav-brand">
             <span class="brand-icon">🏏</span>
             <span class="brand-text">FanZone <span class="brand-ai">AI</span></span>
-            <span class="google-badge">Built with Google</span>
+            <span class="google-badge">Built with Gemini</span>
         </div>
         <div class="nav-links">
             <a href="#" class="nav-link active" data-section="live">🔴 Live</a>
@@ -91,9 +91,30 @@
             <h2>💬 Match Discussions</h2>
             <button class="btn btn-sm btn-primary" id="btnNewDiscussion" onclick="toggleNewDiscussion()">+ New Thread</button>
         </div>
+
+        <!-- Live Score Ticker -->
+        <div class="discuss-live-ticker" id="discussLiveTicker">
+            <div class="ticker-header">
+                <span class="ticker-label"><span class="pulse"></span> Live Scores</span>
+            </div>
+            <div class="ticker-matches" id="tickerMatches">
+                <div class="loading-spinner" style="font-size:0.8rem;">Loading live scores...</div>
+            </div>
+        </div>
+
+        <!-- Match Picker -->
+        <div class="match-picker">
+            <div class="picker-label">Select a match to discuss</div>
+            <select id="discMatchSelect" class="input match-select" onchange="onMatchSelected()">
+                <option value="">Choose a match...</option>
+            </select>
+        </div>
+
+        <!-- New Discussion Form -->
         <div class="card form-card hidden" id="newDiscussionForm">
             <h3>Start a Discussion</h3>
-            <input type="text" id="discMatchId" placeholder="Match ID (copy from live scores)" class="input">
+            <input type="hidden" id="discMatchId">
+            <div class="disc-match-preview" id="discMatchPreview"></div>
             <input type="text" id="discTitle" placeholder="Discussion title" class="input">
             <textarea id="discContent" placeholder="Share your thoughts..." class="input textarea"></textarea>
             <input type="text" id="discTags" placeholder="Tags (comma separated)" class="input">
@@ -102,12 +123,9 @@
                 <button class="btn btn-outline" onclick="toggleNewDiscussion()">Cancel</button>
             </div>
         </div>
-        <div class="search-bar">
-            <input type="text" id="discSearchMatch" placeholder="Enter Match ID to see discussions" class="input">
-            <button class="btn btn-primary" onclick="loadDiscussions()">Search</button>
-        </div>
+
         <div id="discussionsList">
-            <div class="empty-state">Enter a match ID to see fan discussions</div>
+            <div class="empty-state">Select a match above to see fan discussions</div>
         </div>
     </section>
 

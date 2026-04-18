@@ -75,6 +75,7 @@ function switchSection(section) {
     // Load data
     if (section === 'live') loadLiveScores();
     if (section === 'matches') loadRecentMatches();
+    if (section === 'discuss') loadDiscussPage();
 }
 
 // ── API Helper ───────────────────────────────────────────────
@@ -277,16 +278,119 @@ async function getAIAnalysis(matchId) {
 }
 
 // ── Discussions ──────────────────────────────────────────────
+let discussMatches = []; // cached matches for the discuss page
+
+async function loadDiscussPage() {
+    // Load live ticker + match picker
+    const data = await apiFetch('/live-scores');
+    const scores = data.scores || [];
+    discussMatches = scores;
+
+    // Render ticker
+    const ticker = document.getElementById('tickerMatches');
+    if (scores.length === 0) {
+        ticker.innerHTML = '<div style="padding:0.5rem;font-size:0.8rem;color:var(--text-muted);">No live matches right now</div>';
+    } else {
+        ticker.innerHTML = scores.map(s => {
+            const isLive = s.ms === 'live' || (s.matchStarted && !s.matchEnded);
+            const t1 = s.t1 || (s.teams && s.teams[0]) || 'Team 1';
+            const t2 = s.t2 || (s.teams && s.teams[1]) || 'Team 2';
+            const t1s = s.t1s || '';
+            const t2s = s.t2s || '';
+            const matchId = s.id || '';
+            return `
+                <div class="ticker-item ${isLive ? 'ticker-live' : ''}" onclick="selectMatchForDiscuss('${matchId}')">
+                    ${isLive ? '<span class="ticker-live-dot"><span class="pulse"></span></span>' : ''}
+                    <div class="ticker-teams">
+                        <span class="ticker-team">${escHtml(t1)}</span>
+                        <span class="ticker-vs">vs</span>
+                        <span class="ticker-team">${escHtml(t2)}</span>
+                    </div>
+                    <div class="ticker-score">
+                        ${t1s ? `<span>${escHtml(t1s)}</span>` : ''}
+                        ${t2s ? `<span>${escHtml(t2s)}</span>` : ''}
+                    </div>
+                    <div class="ticker-status ${isLive ? 'live' : ''}">${escHtml(s.status || (isLive ? 'Live' : 'Completed'))}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Populate match dropdown
+    const select = document.getElementById('discMatchSelect');
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">Choose a match...</option>';
+    scores.forEach(s => {
+        const t1 = s.t1 || (s.teams && s.teams[0]) || 'Team 1';
+        const t2 = s.t2 || (s.teams && s.teams[1]) || 'Team 2';
+        const isLive = s.ms === 'live' || (s.matchStarted && !s.matchEnded);
+        const label = `${isLive ? '🔴 ' : ''}${t1} vs ${t2} — ${s.matchType || 't20'}`;
+        const opt = document.createElement('option');
+        opt.value = s.id || '';
+        opt.textContent = label;
+        select.appendChild(opt);
+    });
+    if (currentVal) select.value = currentVal;
+}
+
+function selectMatchForDiscuss(matchId) {
+    const select = document.getElementById('discMatchSelect');
+    select.value = matchId;
+    onMatchSelected();
+}
+
+function onMatchSelected() {
+    const matchId = document.getElementById('discMatchSelect').value;
+    if (!matchId) return;
+
+    // Update hidden match ID for new discussion form
+    document.getElementById('discMatchId').value = matchId;
+
+    // Update match preview in form
+    const match = discussMatches.find(m => (m.id || '') === matchId);
+    if (match) {
+        const t1 = match.t1 || (match.teams && match.teams[0]) || '';
+        const t2 = match.t2 || (match.teams && match.teams[1]) || '';
+        const preview = document.getElementById('discMatchPreview');
+        preview.innerHTML = `<span class="preview-match-name">${escHtml(t1)} vs ${escHtml(t2)}</span> <span class="preview-match-type">${escHtml(match.matchType || '')} • ${escHtml(match.series || '')}</span>`;
+    }
+
+    // Auto-load discussions for this match
+    loadDiscussions(matchId);
+}
+
 function toggleNewDiscussion() {
-    document.getElementById('newDiscussionForm').classList.toggle('hidden');
+    const form = document.getElementById('newDiscussionForm');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        // Pre-select current match
+        const matchId = document.getElementById('discMatchSelect').value;
+        if (matchId) {
+            document.getElementById('discMatchId').value = matchId;
+            const match = discussMatches.find(m => (m.id || '') === matchId);
+            if (match) {
+                const t1 = match.t1 || (match.teams && match.teams[0]) || '';
+                const t2 = match.t2 || (match.teams && match.teams[1]) || '';
+                document.getElementById('discTitle').value = '';
+                const preview = document.getElementById('discMatchPreview');
+                preview.innerHTML = `<span class="preview-match-name">${escHtml(t1)} vs ${escHtml(t2)}</span>`;
+            }
+        }
+        document.getElementById('discTitle').focus();
+    }
 }
 
 function startMatchDiscussion(matchId, matchName) {
     switchSection('discuss');
-    document.getElementById('discMatchId').value = matchId;
-    document.getElementById('discTitle').value = `Thoughts on ${matchName}`;
-    document.getElementById('newDiscussionForm').classList.remove('hidden');
-    document.getElementById('discContent').focus();
+    // Wait for discuss page to load, then select match
+    setTimeout(() => {
+        const select = document.getElementById('discMatchSelect');
+        select.value = matchId;
+        onMatchSelected();
+        document.getElementById('newDiscussionForm').classList.remove('hidden');
+        document.getElementById('discTitle').value = '';
+        document.getElementById('discContent').focus();
+    }, 500);
 }
 
 async function createDiscussion() {
@@ -295,8 +399,12 @@ async function createDiscussion() {
     const content = document.getElementById('discContent').value.trim();
     const tags = document.getElementById('discTags').value.trim();
 
-    if (!matchId || !title || !content) {
-        showToast('Please fill in match ID, title, and content', 'error');
+    if (!matchId) {
+        showToast('Please select a match first', 'error');
+        return;
+    }
+    if (!title || !content) {
+        showToast('Please fill in title and content', 'error');
         return;
     }
 
@@ -308,20 +416,21 @@ async function createDiscussion() {
 
     if (data.discussion_id) {
         showToast('Discussion created!', 'success');
-        toggleNewDiscussion();
-        document.getElementById('discSearchMatch').value = matchId;
-        loadDiscussions();
+        document.getElementById('newDiscussionForm').classList.add('hidden');
+        document.getElementById('discTitle').value = '';
+        document.getElementById('discContent').value = '';
+        document.getElementById('discTags').value = '';
+        loadDiscussions(matchId);
     } else {
         showToast('Failed to create discussion', 'error');
     }
 }
 
-async function loadDiscussions() {
-    const matchId = document.getElementById('discSearchMatch').value.trim();
+async function loadDiscussions(matchId) {
     if (!matchId) {
-        showToast('Enter a match ID', 'error');
-        return;
+        matchId = document.getElementById('discMatchSelect').value;
     }
+    if (!matchId) return;
 
     const list = document.getElementById('discussionsList');
     list.innerHTML = '<div class="loading-spinner">Loading discussions...</div>';
