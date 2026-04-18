@@ -1186,11 +1186,12 @@ select.input {
 
 .profile-bio:empty { display: none; }
 
-.btn-danger {
+.btn-outline.btn-danger {
+    background: transparent;
     color: var(--g-red);
     border-color: rgba(234, 67, 53, 0.3);
 }
-.btn-danger:hover {
+.btn-outline.btn-danger:hover {
     background: rgba(234, 67, 53, 0.1);
     border-color: var(--g-red);
 }
