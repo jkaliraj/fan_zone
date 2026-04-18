@@ -25,7 +25,7 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from api.routes import router
 
-app = FastAPI(title="FanZone AI", version="1.0.0")
+app = FastAPI(title="FanZone AI — Indian Cricket Fan Platform", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

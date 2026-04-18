@@ -86,7 +86,7 @@ async function loadLiveScores() {
     document.getElementById('statLive').textContent = live.length || scores.length;
 
     if (scores.length === 0) {
-        grid.innerHTML = '<div class="empty-state">No live scores available right now. Check back during match time!</div>';
+        grid.innerHTML = '<div class="empty-state">No live Indian cricket scores right now. Check back during IPL or India match time!</div>';
         return;
     }
 
@@ -132,7 +132,7 @@ async function loadRecentMatches() {
     const matches = data.matches || [];
 
     if (matches.length === 0) {
-        grid.innerHTML = '<div class="empty-state">No recent matches found</div>';
+        grid.innerHTML = '<div class="empty-state">No recent Indian cricket matches found</div>';
         return;
     }
 

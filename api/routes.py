@@ -17,6 +17,7 @@ from cricket_api.client import (
     get_all_matches,
     search_players,
     get_player_info,
+    is_india_match,
 )
 from db.firestore import (
     create_fan_profile,
@@ -79,19 +80,20 @@ class ChatRequest(BaseModel):
 
 @router.get("/live-scores")
 async def api_live_scores():
-    """Real-time live scores for all running matches."""
+    """Real-time live scores — Indian cricket only."""
     result = get_live_scores()
     if result.get("status") == "success":
-        return {"scores": result.get("data", []), "count": len(result.get("data", []))}
+        scores = [s for s in result.get("data", []) if is_india_match(s)]
+        return {"scores": scores, "count": len(scores)}
     return {"scores": [], "count": 0, "error": result.get("error", "API unavailable")}
 
 
 @router.get("/current-matches")
 async def api_current_matches():
-    """Currently running and recently completed matches."""
+    """Currently running and recently completed Indian cricket matches."""
     result = get_current_matches()
     if result.get("status") == "success":
-        matches = result.get("data", [])
+        matches = [m for m in result.get("data", []) if is_india_match(m)]
         return {"matches": matches, "count": len(matches)}
     return {"matches": [], "count": 0, "error": result.get("error", "API unavailable")}
 
@@ -107,10 +109,10 @@ async def api_match_detail(match_id: str):
 
 @router.get("/recent-matches")
 async def api_recent_matches(count: int = Query(default=10, ge=1, le=25)):
-    """Recent matches from the global list."""
+    """Recent Indian cricket matches only."""
     result = get_all_matches(offset=0)
     if result.get("status") == "success":
-        matches = result.get("data", [])
+        matches = [m for m in result.get("data", []) if is_india_match(m)]
         matches.sort(key=lambda x: x.get("dateTimeGMT", ""), reverse=True)
         return {"matches": matches[:count], "count": min(count, len(matches))}
     return {"matches": [], "count": 0}

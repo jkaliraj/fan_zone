@@ -121,3 +121,35 @@ def get_player_info(player_id: str) -> dict:
 def search_players(query: str, offset: int = 0) -> dict:
     """Search for players by name."""
     return _api_get("players", {"search": query, "offset": offset}, cache_ttl=CACHE_LONG)
+
+
+# ── India-only Filter ─────────────────────────────────────────
+
+# IPL team names + "India" — used to filter matches to Indian cricket only
+_INDIA_KEYWORDS = [
+    "india", "ipl", "indian premier league",
+    "chennai super kings", "csk",
+    "mumbai indians",
+    "royal challengers", "rcb",
+    "kolkata knight riders", "kkr",
+    "rajasthan royals",
+    "delhi capitals",
+    "gujarat titans",
+    "punjab kings", "pbks",
+    "sunrisers hyderabad", "srh",
+    "lucknow super giants", "lsg",
+]
+
+
+def is_india_match(match: dict) -> bool:
+    """Return True if this match involves India or an IPL team."""
+    blob = " ".join([
+        match.get("name", ""),
+        match.get("series", ""),
+        " ".join(match.get("teams", [])),
+        match.get("t1", ""),
+        match.get("t2", ""),
+        match.get("team1", ""),
+        match.get("team2", ""),
+    ]).lower()
+    return any(kw in blob for kw in _INDIA_KEYWORDS)

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanZone AI — Where Every Match Creates a Connection</title>
+    <title>FanZone AI — Indian Cricket Fan Connection Platform</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏏</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -33,8 +33,8 @@
     <!-- ── HERO ───────────────────────────────────────────── -->
     <section class="hero" id="heroSection">
         <div class="hero-content">
-            <h1>Where Every Match Creates a <span class="text-accent">Connection</span></h1>
-            <p class="hero-sub">Real-time scores &bull; Fan discussions &bull; AI-powered connections &mdash; all centered around live cricket</p>
+            <h1>Where Every <span class="text-accent">Indian Cricket</span> Match Creates a Connection</h1>
+            <p class="hero-sub">Live IPL &amp; India match scores &bull; Fan discussions &bull; AI-powered connections &mdash; exclusively for Indian cricket</p>
             <div class="hero-actions">
                 <button class="btn btn-primary btn-lg" onclick="switchSection('live')">🔴 View Live Scores</button>
                 <button class="btn btn-outline btn-lg" onclick="switchSection('fans')">👥 Find Your Tribe</button>
@@ -59,7 +59,7 @@
     <!-- ── LIVE SCORES ────────────────────────────────────── -->
     <section class="section hidden" id="sectionLive">
         <div class="section-header">
-            <h2>🔴 Live Cricket Scores</h2>
+            <h2>🔴 Live Indian Cricket Scores</h2>
             <button class="btn btn-sm btn-outline" onclick="loadLiveScores()">↻ Refresh</button>
         </div>
         <div class="card-grid" id="liveScoresGrid">
@@ -72,7 +72,7 @@
         <div class="section-header">
             <h2>📋 Matches</h2>
             <div class="tab-bar">
-                <button class="tab active" data-tab="recent" onclick="loadRecentMatches()">Recent</button>
+                <button class="tab active" data-tab="recent" onclick="loadRecentMatches()">Recent India</button>
                 <button class="tab" data-tab="ipl" onclick="loadIPLMatches()">IPL</button>
             </div>
         </div>
@@ -181,7 +181,7 @@
                     <div class="msg-avatar">🧠</div>
                     <div class="msg-bubble">
                         Welcome to <strong>FanZone AI Agents!</strong> I'm powered by <strong>Google ADK</strong> with a multi-agent system:<br><br>
-                        🏏 <strong>Match Agent</strong> — Live scores, IPL, match details, player stats<br>
+                        🏏 <strong>Match Agent</strong> — Live IPL &amp; India scores, match details, player stats<br>
                         👥 <strong>Fan Agent</strong> — Register, find fans, discover similar fans<br>
                         💬 <strong>Discussion Agent</strong> — Start threads, reply, react to matches<br>
                         🤝 <strong>Connection Agent</strong> — Connect with fans over shared moments<br><br>
@@ -190,7 +190,7 @@
                 </div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="agentInput" placeholder="Ask agents about live scores, teams, fans, discussions..." class="input" onkeydown="if(event.key==='Enter')sendAgentChat()">
+                <input type="text" id="agentInput" placeholder="Ask agents about IPL scores, India matches, teams, fans..." class="input" onkeydown="if(event.key==='Enter')sendAgentChat()">
                 <button class="btn btn-primary" onclick="sendAgentChat()">Send</button>
             </div>
         </div>
@@ -207,8 +207,8 @@
                 <div class="chat-msg bot">
                     <div class="msg-avatar">🏏</div>
                     <div class="msg-bubble">
-                        Welcome to FanZone AI! I'm powered by <strong>Gemini 2.5 Flash</strong>. Ask me anything about cricket:<br><br>
-                        &bull; &ldquo;What are the live scores?&rdquo;<br>
+                        Welcome to FanZone AI! I'm powered by <strong>Gemini 2.5 Flash</strong>. Ask me anything about Indian cricket:<br><br>
+                        &bull; &ldquo;What are the live IPL scores?&rdquo;<br>
                         &bull; &ldquo;Tell me about CSK&rdquo;<br>
                         &bull; &ldquo;Analyze today's IPL match&rdquo;<br>
                         &bull; &ldquo;Who is Virat Kohli?&rdquo;
@@ -216,7 +216,7 @@
                 </div>
             </div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Ask about matches, teams, players..." class="input" onkeydown="if(event.key==='Enter')sendChat()">
+                <input type="text" id="chatInput" placeholder="Ask about IPL, India matches, teams, players..." class="input" onkeydown="if(event.key==='Enter')sendChat()">
                 <button class="btn btn-primary" onclick="sendChat()">Send</button>
             </div>
         </div>

@@ -19,6 +19,7 @@ from cricket_api.client import (
     search_players,
     get_player_info,
     get_all_matches,
+    is_india_match,
 )
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
@@ -30,11 +31,11 @@ def _load_teams() -> dict:
 
 
 def get_live_matches() -> dict:
-    """Get all currently live and recently completed cricket matches with real-time scores."""
+    """Get currently live and recently completed Indian cricket matches with real-time scores."""
     result = get_current_matches()
     if result.get("status") != "success":
         return {"error": "Failed to fetch live matches", "detail": result.get("error", "")}
-    matches = result.get("data", [])
+    matches = [m for m in result.get("data", []) if is_india_match(m)]
     live = [m for m in matches if m.get("matchStarted", False) and not m.get("matchEnded", False)]
     recent = [m for m in matches if m.get("matchEnded", False)]
     return {
@@ -47,11 +48,12 @@ def get_live_matches() -> dict:
 
 
 def get_live_cricket_scores() -> dict:
-    """Get real-time live scores for all running cricket matches worldwide."""
+    """Get real-time live scores for Indian cricket matches."""
     result = get_live_scores()
     if result.get("status") != "success":
         return {"error": "Failed to fetch live scores", "detail": result.get("error", "")}
-    return {"scores": result.get("data", []), "count": len(result.get("data", []))}
+    scores = [s for s in result.get("data", []) if is_india_match(s)]
+    return {"scores": scores, "count": len(scores)}
 
 
 def get_match_details(match_id: str) -> dict:
@@ -70,18 +72,18 @@ def get_match_details(match_id: str) -> dict:
 
 
 def get_recent_matches(count: int = 10) -> dict:
-    """Get the most recent cricket matches from the global match list.
+    """Get the most recent Indian cricket matches.
 
     Args:
         count: Number of recent matches to return (default 10, max 25 per page).
 
     Returns:
-        dict: List of recent matches with results, dates, venues.
+        dict: List of recent Indian matches with results, dates, venues.
     """
     result = get_all_matches(offset=0)
     if result.get("status") != "success":
         return {"error": "Failed to fetch matches", "detail": result.get("error", "")}
-    matches = result.get("data", [])
+    matches = [m for m in result.get("data", []) if is_india_match(m)]
     matches.sort(key=lambda x: x.get("dateTimeGMT", ""), reverse=True)
     return {"recent_matches": matches[:count], "count": min(count, len(matches))}
 
