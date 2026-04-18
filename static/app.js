@@ -796,9 +796,6 @@ async function loadConnections() {
                     <div class="conn-name">${escHtml(otherUser)}</div>
                     <div class="conn-reason">${escHtml(reason)}</div>
                 </div>
-                <div class="conn-meta">
-                    <span class="conn-date">${timeAgo(c.created_at)}</span>
-                </div>
             </div>
         `;
     }).join('');
