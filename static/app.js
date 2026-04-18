@@ -307,6 +307,19 @@ async function getAIAnalysis(matchId) {
 }
 
 // ── Discussions ──────────────────────────────────────────────
+const TEAM_ABBR = {
+    'chennai super kings': 'CSK', 'mumbai indians': 'MI', 'royal challengers bengaluru': 'RCB',
+    'royal challengers bangalore': 'RCB', 'kolkata knight riders': 'KKR', 'delhi capitals': 'DC',
+    'punjab kings': 'PBKS', 'rajasthan royals': 'RR', 'sunrisers hyderabad': 'SRH',
+    'lucknow super giants': 'LSG', 'gujarat titans': 'GT', 'india': 'IND', 'india women': 'IND-W',
+    'australia': 'AUS', 'england': 'ENG', 'south africa': 'SA', 'new zealand': 'NZ',
+    'pakistan': 'PAK', 'sri lanka': 'SL', 'bangladesh': 'BAN', 'west indies': 'WI',
+    'south africa women': 'SA-W', 'australia women': 'AUS-W', 'england women': 'ENG-W',
+};
+function teamAbbr(name) {
+    const key = (name || '').toLowerCase().trim();
+    return TEAM_ABBR[key] || name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 3);
+}
 let discussMatches = []; // cached matches for the discuss page
 let selectedDiscussMatchId = null;
 
@@ -324,31 +337,17 @@ async function loadDiscussPage() {
 
     grid.innerHTML = scores.map(s => {
         const isLive = s.ms === 'live' || (s.matchStarted && !s.matchEnded);
-        const isUpcoming = !s.matchStarted && !s.matchEnded;
         const t1 = s.t1 || (s.teams && s.teams[0]) || 'Team 1';
         const t2 = s.t2 || (s.teams && s.teams[1]) || 'Team 2';
-        const t1s = s.t1s || '';
-        const t2s = s.t2s || '';
         const matchId = s.id || '';
         const isSelected = matchId === selectedDiscussMatchId;
-        const startTime = s.dateTimeGMT ? new Date(s.dateTimeGMT).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 
         return `
             <div class="discuss-match-card ${isLive ? 'dm-live' : ''} ${isSelected ? 'dm-selected' : ''}" onclick="selectDiscussMatch('${matchId}')">
-                ${isLive ? '<div class="dm-live-badge"><span class="pulse"></span> LIVE</div>' : ''}
-                <div class="dm-teams">
-                    <span class="dm-team">${escHtml(t1)}</span>
-                    <span class="dm-vs">vs</span>
-                    <span class="dm-team">${escHtml(t2)}</span>
-                </div>
-                ${t1s || t2s ? `
-                    <div class="dm-scores">
-                        ${t1s ? `<div class="dm-score-line">${escHtml(t1s)}</div>` : ''}
-                        ${t2s ? `<div class="dm-score-line">${escHtml(t2s)}</div>` : ''}
-                    </div>
-                ` : ''}
-                ${isUpcoming && startTime ? `<div class="dm-upcoming">🕐 ${escHtml(startTime)}</div>` : ''}
-                <div class="dm-status ${isLive ? 'live' : ''}">${escHtml(s.status || (isLive ? 'In Progress' : isUpcoming ? 'Upcoming' : 'Completed'))}</div>
+                ${isLive ? '<span class="dm-live-dot"></span>' : ''}
+                <span class="dm-abbr">${escHtml(teamAbbr(t1))}</span>
+                <span class="dm-vs">v</span>
+                <span class="dm-abbr">${escHtml(teamAbbr(t2))}</span>
             </div>
         `;
     }).join('');
@@ -360,6 +359,12 @@ async function loadDiscussPage() {
 }
 
 function selectDiscussMatch(matchId) {
+    // Toggle: clicking the same card again deselects it
+    if (selectedDiscussMatchId === matchId) {
+        clearMatchSelection();
+        return;
+    }
+
     selectedDiscussMatchId = matchId;
     document.getElementById('discMatchId').value = matchId;
 
@@ -367,16 +372,11 @@ function selectDiscussMatch(matchId) {
     document.querySelectorAll('.discuss-match-card').forEach(c => c.classList.remove('dm-selected'));
     event.currentTarget?.classList.add('dm-selected');
 
-    // Show selected match bar
+    // Update form preview
     const match = discussMatches.find(m => (m.id || '') === matchId);
     if (match) {
         const t1 = match.t1 || (match.teams && match.teams[0]) || '';
         const t2 = match.t2 || (match.teams && match.teams[1]) || '';
-        const bar = document.getElementById('selectedMatchBar');
-        document.getElementById('selectedMatchLabel').innerHTML = `💬 Showing discussions for: <strong>${escHtml(t1)} vs ${escHtml(t2)}</strong>`;
-        bar.classList.remove('hidden');
-
-        // Update form preview
         const preview = document.getElementById('discMatchPreview');
         preview.innerHTML = `<span class="preview-match-name">${escHtml(t1)} vs ${escHtml(t2)}</span> <span class="preview-match-type">${escHtml(match.matchType || '')} • ${escHtml(match.series || '')}</span>`;
     }
@@ -388,7 +388,6 @@ function clearMatchSelection() {
     selectedDiscussMatchId = null;
     document.getElementById('discMatchId').value = '';
     document.querySelectorAll('.discuss-match-card').forEach(c => c.classList.remove('dm-selected'));
-    document.getElementById('selectedMatchBar').classList.add('hidden');
     document.getElementById('discussionsList').innerHTML = '<div class="empty-state">Click on a match above to see fan discussions</div>';
 }
 
