@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    FanZone AI — Design System
-   Dark theme, cricket-inspired, modern glassmorphism
+   Dark theme • Google-colored accents • Indian cricket
    ═══════════════════════════════════════════════════════════ */
 
 :root {
@@ -16,14 +16,24 @@
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
 
-    --accent: #22d3ee;
-    --accent-glow: rgba(34, 211, 238, 0.15);
-    --accent-dark: #0891b2;
-    --green: #34d399;
-    --green-glow: rgba(52, 211, 153, 0.15);
-    --red: #f87171;
-    --red-glow: rgba(248, 113, 113, 0.15);
-    --yellow: #fbbf24;
+    /* Google brand colors */
+    --g-blue: #4285F4;
+    --g-red: #EA4335;
+    --g-yellow: #FBBC04;
+    --g-green: #34A853;
+    --g-blue-glow: rgba(66, 133, 244, 0.15);
+    --g-red-glow: rgba(234, 67, 53, 0.15);
+    --g-yellow-glow: rgba(251, 188, 4, 0.15);
+    --g-green-glow: rgba(52, 168, 83, 0.15);
+
+    --accent: var(--g-blue);
+    --accent-glow: var(--g-blue-glow);
+    --accent-dark: #3367d6;
+    --green: var(--g-green);
+    --green-glow: var(--g-green-glow);
+    --red: var(--g-red);
+    --red-glow: var(--g-red-glow);
+    --yellow: var(--g-yellow);
     --orange: #fb923c;
     --purple: #a78bfa;
 
@@ -34,7 +44,7 @@
 
     --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
-    --shadow-glow: 0 0 30px rgba(34, 211, 238, 0.1);
+    --shadow-glow: 0 0 30px rgba(66, 133, 244, 0.1);
 
     --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --transition: all 0.2s ease;
@@ -53,6 +63,16 @@ body {
     overflow-x: hidden;
 }
 
+/* Google color bar at the very top */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--g-blue) 25%, var(--g-red) 25%, var(--g-red) 50%, var(--g-yellow) 50%, var(--g-yellow) 75%, var(--g-green) 75%);
+    z-index: 200;
+}
+
 /* ── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -61,7 +81,7 @@ body {
 /* ── Navbar ─────────────────────────────────────────────── */
 .navbar {
     position: fixed;
-    top: 0;
+    top: 3px;
     left: 0;
     right: 0;
     z-index: 100;
@@ -84,7 +104,36 @@ body {
 }
 
 .brand-icon { font-size: 1.5rem; }
-.brand-ai { color: var(--accent); }
+.brand-ai {
+    background: linear-gradient(90deg, var(--g-blue), var(--g-red), var(--g-yellow), var(--g-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.google-badge {
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    background: linear-gradient(90deg, var(--g-blue-glow), var(--g-red-glow), var(--g-yellow-glow), var(--g-green-glow));
+    border: 1px solid rgba(66, 133, 244, 0.2);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    letter-spacing: 0.03em;
+}
+
+/* Google-colored word */
+.g-word { font-weight: 700; }
+.g-b { color: var(--g-blue); }
+.g-r { color: var(--g-red); }
+.g-y { color: var(--g-yellow); }
+.g-g { color: var(--g-green); }
+
+.hero-google {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
 
 .nav-links {
     display: flex;
@@ -139,8 +188,8 @@ body {
     white-space: nowrap;
 }
 
-.btn-primary { background: var(--accent); color: #000; }
-.btn-primary:hover { background: #06b6d4; box-shadow: 0 0 20px rgba(34,211,238,0.3); }
+.btn-primary { background: var(--g-blue); color: #fff; }
+.btn-primary:hover { background: #3367d6; box-shadow: 0 0 20px rgba(66,133,244,0.3); }
 
 .btn-outline { background: transparent; border: 1px solid var(--border-hover); color: var(--text-primary); }
 .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
@@ -158,7 +207,7 @@ body {
 .hero {
     padding: 7rem 2rem 3rem;
     text-align: center;
-    background: linear-gradient(180deg, rgba(34,211,238,0.03) 0%, transparent 60%);
+    background: linear-gradient(180deg, rgba(66,133,244,0.04) 0%, transparent 60%);
     position: relative;
     overflow: hidden;
 }
@@ -171,7 +220,7 @@ body {
     transform: translateX(-50%);
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(34,211,238,0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(66,133,244,0.06) 0%, transparent 70%);
     pointer-events: none;
 }
 
@@ -212,8 +261,12 @@ body {
     border-radius: var(--radius);
 }
 
-.stat-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
+.stat-num { font-size: 2rem; font-weight: 800; color: var(--g-blue); }
 .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+.hero-stats .stat-card:nth-child(1) .stat-num { color: var(--g-blue); }
+.hero-stats .stat-card:nth-child(2) .stat-num { color: var(--g-red); }
+.hero-stats .stat-card:nth-child(3) .stat-num { color: var(--g-green); }
 
 /* ── Sections ───────────────────────────────────────────── */
 .section {
@@ -365,8 +418,8 @@ body {
     transition: var(--transition);
 }
 
-.tab:hover { border-color: var(--accent); color: var(--accent); }
-.tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+.tab:hover { border-color: var(--g-blue); color: var(--g-blue); }
+.tab.active { background: var(--g-blue); color: #fff; border-color: var(--g-blue); }
 
 /* ── Input / Forms ──────────────────────────────────────── */
 .input {
@@ -626,11 +679,11 @@ select.input {
 }
 
 .chat-msg.bot .msg-bubble { background: var(--bg-secondary); border: 1px solid var(--border); }
-.chat-msg.user .msg-bubble { background: var(--accent); color: #000; border-radius: var(--radius) var(--radius) 4px var(--radius); }
+.chat-msg.user .msg-bubble { background: var(--g-blue); color: #fff; border-radius: var(--radius) var(--radius) 4px var(--radius); }
 
 .msg-bubble ul { padding-left: 1.25rem; margin-top: 0.5rem; }
 .msg-bubble li { font-size: 0.8rem; color: var(--text-secondary); padding: 0.1rem 0; }
-.chat-msg.user .msg-bubble li { color: rgba(0,0,0,0.7); }
+.chat-msg.user .msg-bubble li { color: rgba(255,255,255,0.7); }
 
 .chat-input-area {
     display: flex;
@@ -780,19 +833,19 @@ select.input {
     border-radius: 50%;
     display: inline-block;
 }
-.agent-dot.commander { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
-.agent-dot.match { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.agent-dot.fan { background: var(--purple); box-shadow: 0 0 6px var(--purple); }
-.agent-dot.discuss { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.agent-dot.commander { background: var(--g-blue); box-shadow: 0 0 6px var(--g-blue); }
+.agent-dot.match { background: var(--g-green); box-shadow: 0 0 6px var(--g-green); }
+.agent-dot.fan { background: var(--g-red); box-shadow: 0 0 6px var(--g-red); }
+.agent-dot.discuss { background: var(--g-yellow); box-shadow: 0 0 6px var(--g-yellow); }
 .agent-dot.connect { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
 
 .agent-chat-container {
-    border-color: var(--accent);
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.05);
+    border-color: var(--g-blue);
+    box-shadow: 0 0 20px rgba(66, 133, 244, 0.08);
 }
 
 .agent-chat-container .chat-msg.bot .msg-avatar {
-    background: linear-gradient(135deg, var(--accent-glow), rgba(167, 139, 250, 0.15));
+    background: linear-gradient(135deg, var(--g-blue-glow), var(--g-green-glow));
 }
 
 /* ── Responsive ─────────────────────────────────────────── */
