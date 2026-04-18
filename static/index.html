@@ -23,8 +23,7 @@
             <a href="#" class="nav-link" data-section="matches">📋 Matches</a>
             <a href="#" class="nav-link" data-section="discuss">💬 Discuss</a>
             <a href="#" class="nav-link" data-section="fans">👥 Fans</a>
-            <a href="#" class="nav-link" data-section="agents">🧠 AI Agents</a>
-            <a href="#" class="nav-link" data-section="chat">🤖 AI Chat</a>
+            <a href="#" class="nav-link" data-section="ai">✨ Gemini AI</a>
         </div>
         <div class="nav-profile" id="navProfile">
             <button class="btn btn-sm btn-accent" id="btnRegister" onclick="switchSection('fans')">Join FanZone</button>
@@ -164,62 +163,74 @@
         </div>
     </section>
 
-    <!-- ── AI AGENTS (ADK Multi-Agent System) ─────────────── -->
-    <section class="section hidden" id="sectionAgents">
+    <!-- ── GEMINI AI (Combined Agents + Chat) ───────────────── -->
+    <section class="section hidden" id="sectionAi">
         <div class="section-header">
-            <h2>🧠 AI Agents</h2>
-            <span class="badge">ADK Multi-Agent • Gemini 2.5 Flash</span>
+            <h2>✨ Gemini AI</h2>
+            <span class="gemini-badge">✨ Powered by Gemini 2.5 Flash</span>
         </div>
-        <div class="agent-info-bar">
-            <div class="agent-chip"><span class="agent-dot commander"></span>Commander</div>
-            <div class="agent-chip"><span class="agent-dot match"></span>Match Agent</div>
-            <div class="agent-chip"><span class="agent-dot fan"></span>Fan Agent</div>
-            <div class="agent-chip"><span class="agent-dot discuss"></span>Discussion Agent</div>
-            <div class="agent-chip"><span class="agent-dot connect"></span>Connection Agent</div>
+        <div class="ai-mode-tabs">
+            <button class="ai-tab active" data-aitab="agents" onclick="switchAiTab('agents')">
+                <span class="ai-tab-icon">🧠</span>
+                <span class="ai-tab-label">AI Agents</span>
+                <span class="ai-tab-desc">Multi-agent system with tools</span>
+            </button>
+            <button class="ai-tab" data-aitab="chat" onclick="switchAiTab('chat')">
+                <span class="ai-tab-icon">💬</span>
+                <span class="ai-tab-label">Quick Chat</span>
+                <span class="ai-tab-desc">Direct Gemini conversation</span>
+            </button>
         </div>
-        <div class="chat-container agent-chat-container">
-            <div class="chat-messages" id="agentMessages">
-                <div class="chat-msg bot">
-                    <div class="msg-avatar">🧠</div>
-                    <div class="msg-bubble">
-                        Welcome to <strong>FanZone AI Agents!</strong> I'm powered by <strong>Google ADK</strong> with a multi-agent system:<br><br>
-                        🏏 <strong>Match Agent</strong> — Live IPL &amp; India scores, match details, player stats<br>
-                        👥 <strong>Fan Agent</strong> — Register, find fans, discover similar fans<br>
-                        💬 <strong>Discussion Agent</strong> — Start threads, reply, react to matches<br>
-                        🤝 <strong>Connection Agent</strong> — Connect with fans over shared moments<br><br>
-                        Try: <em>"Show me live scores"</em>, <em>"Find CSK fans"</em>, <em>"Tell me about Virat Kohli"</em>
-                    </div>
-                </div>
-            </div>
-            <div class="chat-input-area">
-                <input type="text" id="agentInput" placeholder="Ask agents about IPL scores, India matches, teams, fans..." class="input" onkeydown="if(event.key==='Enter')sendAgentChat()">
-                <button class="btn btn-primary" onclick="sendAgentChat()">Send</button>
-            </div>
-        </div>
-    </section>
 
-    <!-- ── AI CHAT ────────────────────────────────────────── -->
-    <section class="section hidden" id="sectionChat">
-        <div class="section-header">
-            <h2>🤖 FanZone AI</h2>
-            <span class="badge">Powered by Gemini 2.5 Flash</span>
-        </div>
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages">
-                <div class="chat-msg bot">
-                    <div class="msg-avatar">🏏</div>
-                    <div class="msg-bubble">
-                        Welcome to FanZone AI! I'm powered by <strong>Gemini 2.5 Flash</strong>. Ask me anything about Indian cricket:<br><br>
-                        &bull; &ldquo;What are the live IPL scores?&rdquo;<br>
-                        &bull; &ldquo;Tell me about CSK&rdquo;<br>
-                        &bull; &ldquo;Analyze today's IPL match&rdquo;<br>
-                        &bull; &ldquo;Who is Virat Kohli?&rdquo;
+        <!-- Agent Mode -->
+        <div id="aiPanelAgents">
+            <div class="agent-info-bar">
+                <div class="agent-chip"><span class="agent-dot commander"></span>Commander</div>
+                <div class="agent-chip"><span class="agent-dot match"></span>Match Agent</div>
+                <div class="agent-chip"><span class="agent-dot fan"></span>Fan Agent</div>
+                <div class="agent-chip"><span class="agent-dot discuss"></span>Discussion Agent</div>
+                <div class="agent-chip"><span class="agent-dot connect"></span>Connection Agent</div>
+            </div>
+            <div class="chat-container agent-chat-container">
+                <div class="chat-messages" id="agentMessages">
+                    <div class="chat-msg bot">
+                        <div class="msg-avatar">🧠</div>
+                        <div class="msg-bubble">
+                            Welcome to <strong>FanZone AI Agents!</strong> Powered by <strong>Gemini 2.5 Flash</strong> + <strong>Google ADK</strong>:<br><br>
+                            🏏 <strong>Match Agent</strong> — Live IPL &amp; India scores, match details, player stats<br>
+                            👥 <strong>Fan Agent</strong> — Register, find fans, discover similar fans<br>
+                            💬 <strong>Discussion Agent</strong> — Start threads, reply, react to matches<br>
+                            🤝 <strong>Connection Agent</strong> — Connect with fans over shared moments<br><br>
+                            Try: <em>"Show me live IPL scores"</em>, <em>"Find CSK fans"</em>, <em>"Tell me about Virat Kohli"</em>
+                        </div>
                     </div>
                 </div>
+                <div class="chat-input-area">
+                    <input type="text" id="agentInput" placeholder="Ask agents about IPL scores, India matches, teams, fans..." class="input" onkeydown="if(event.key==='Enter')sendAgentChat()">
+                    <button class="btn btn-primary" onclick="sendAgentChat()">Send</button>
+                </div>
             </div>
-            <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="Ask about IPL, India matches, teams, players..." class="input" onkeydown="if(event.key==='Enter')sendChat()">
-                <button class="btn btn-primary" onclick="sendChat()">Send</button>
+        </div>
+
+        <!-- Quick Chat Mode -->
+        <div id="aiPanelChat" class="hidden">
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-msg bot">
+                        <div class="msg-avatar">🏏</div>
+                        <div class="msg-bubble">
+                            I'm <strong>Gemini 2.5 Flash</strong> — your Indian cricket companion. Ask me anything:<br><br>
+                            &bull; &ldquo;What are the live IPL scores?&rdquo;<br>
+                            &bull; &ldquo;Tell me about CSK&rdquo;<br>
+                            &bull; &ldquo;Analyze today's IPL match&rdquo;<br>
+                            &bull; &ldquo;Who is Virat Kohli?&rdquo;
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Ask Gemini about IPL, India matches, teams, players..." class="input" onkeydown="if(event.key==='Enter')sendChat()">
+                    <button class="btn btn-primary" onclick="sendChat()">Send</button>
+                </div>
             </div>
         </div>
     </section>

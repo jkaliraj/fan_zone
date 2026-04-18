@@ -805,6 +805,52 @@ select.input {
 }
 
 /* ── Agent UI ───────────────────────────────────────────── */
+.gemini-badge {
+    padding: 0.3rem 0.75rem;
+    background: linear-gradient(135deg, var(--g-blue-glow), rgba(168, 85, 247, 0.15));
+    border: 1px solid rgba(66, 133, 244, 0.25);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--g-blue);
+    letter-spacing: 0.02em;
+}
+
+.ai-mode-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.ai-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 1rem;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: var(--font);
+    color: var(--text-secondary);
+}
+
+.ai-tab:hover { border-color: var(--g-blue); }
+
+.ai-tab.active {
+    border-color: var(--g-blue);
+    background: var(--g-blue-glow);
+    color: var(--text-primary);
+}
+
+.ai-tab-icon { font-size: 1.5rem; }
+.ai-tab-label { font-size: 0.9rem; font-weight: 700; }
+.ai-tab-desc { font-size: 0.7rem; color: var(--text-muted); }
+.ai-tab.active .ai-tab-desc { color: var(--g-blue); }
+
 .agent-info-bar {
     display: flex;
     gap: 0.5rem;

@@ -43,20 +43,19 @@ function switchSection(section) {
 
     // Hide all sections
     document.getElementById('heroSection').classList.toggle('hidden', section !== 'live');
-    ['Live', 'Matches', 'Discuss', 'Fans', 'Agents', 'Chat'].forEach(s => {
+    ['Live', 'Matches', 'Discuss', 'Fans', 'Ai'].forEach(s => {
         const el = document.getElementById(`section${s}`);
         if (el) el.classList.add('hidden');
     });
 
     // Show target
-    const map = { live: 'Live', matches: 'Matches', discuss: 'Discuss', fans: 'Fans', agents: 'Agents', chat: 'Chat' };
+    const map = { live: 'Live', matches: 'Matches', discuss: 'Discuss', fans: 'Fans', ai: 'Ai' };
     const target = document.getElementById(`section${map[section]}`);
     if (target) target.classList.remove('hidden');
 
     // Load data
     if (section === 'live') loadLiveScores();
     if (section === 'matches') loadRecentMatches();
-    if (section === 'agents') { /* agent chat loaded on demand */ }
 }
 
 // ── API Helper ───────────────────────────────────────────────
@@ -532,6 +531,17 @@ async function loadConnections() {
             </div>
         </div>
     `).join('');
+}
+
+// ── AI Tab Switching ─────────────────────────────────────────
+function switchAiTab(tab) {
+    // Update tab buttons
+    document.querySelectorAll('.ai-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.ai-tab[data-aitab="${tab}"]`)?.classList.add('active');
+
+    // Toggle panels
+    document.getElementById('aiPanelAgents').classList.toggle('hidden', tab !== 'agents');
+    document.getElementById('aiPanelChat').classList.toggle('hidden', tab !== 'chat');
 }
 
 // ── AI Chat ──────────────────────────────────────────────────
