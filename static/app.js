@@ -533,63 +533,7 @@ async function loadConnections() {
     `).join('');
 }
 
-// ── AI Tab Switching ─────────────────────────────────────────
-function switchAiTab(tab) {
-    // Update tab buttons
-    document.querySelectorAll('.ai-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector(`.ai-tab[data-aitab="${tab}"]`)?.classList.add('active');
-
-    // Toggle panels
-    document.getElementById('aiPanelAgents').classList.toggle('hidden', tab !== 'agents');
-    document.getElementById('aiPanelChat').classList.toggle('hidden', tab !== 'chat');
-}
-
-// ── AI Chat ──────────────────────────────────────────────────
-async function sendChat() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    if (!message) return;
-
-    const messagesDiv = document.getElementById('chatMessages');
-
-    // Add user message
-    messagesDiv.innerHTML += `
-        <div class="chat-msg user">
-            <div class="msg-avatar">${currentUser?.display_name?.[0] || 'U'}</div>
-            <div class="msg-bubble">${escHtml(message)}</div>
-        </div>
-    `;
-    input.value = '';
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-    // Show typing indicator
-    const typingId = `typing-${Date.now()}`;
-    messagesDiv.innerHTML += `
-        <div class="chat-msg bot" id="${typingId}">
-            <div class="msg-avatar">🏏</div>
-            <div class="msg-bubble" style="color: var(--text-muted);">Thinking...</div>
-        </div>
-    `;
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-    // Call AI
-    const data = await apiFetch('/chat', {
-        method: 'POST',
-        body: JSON.stringify({ message, user_id: currentUser?.user_id || 'anonymous' }),
-    });
-
-    // Remove typing, add response
-    document.getElementById(typingId)?.remove();
-    messagesDiv.innerHTML += `
-        <div class="chat-msg bot">
-            <div class="msg-avatar">🏏</div>
-            <div class="msg-bubble">${formatAIResponse(data.response || 'Sorry, I couldn\'t process that.')}</div>
-        </div>
-    `;
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-// ── ADK Agent Chat ──────────────────────────────────────────
+// ── Gemini AI Chat ──────────────────────────────────────────
 async function sendAgentChat() {
     const input = document.getElementById('agentInput');
     const message = input.value.trim();
@@ -611,8 +555,8 @@ async function sendAgentChat() {
     const typingId = `agent-typing-${Date.now()}`;
     messagesDiv.innerHTML += `
         <div class="chat-msg bot" id="${typingId}">
-            <div class="msg-avatar">🧠</div>
-            <div class="msg-bubble" style="color: var(--text-muted);">Agents are working on your request...</div>
+            <div class="msg-avatar">✨</div>
+            <div class="msg-bubble" style="color: var(--text-muted);">Gemini is thinking...</div>
         </div>
     `;
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -627,8 +571,8 @@ async function sendAgentChat() {
     document.getElementById(typingId)?.remove();
     messagesDiv.innerHTML += `
         <div class="chat-msg bot">
-            <div class="msg-avatar">🧠</div>
-            <div class="msg-bubble">${formatAIResponse(data.response || 'Agent could not process your request.')}</div>
+            <div class="msg-avatar">✨</div>
+            <div class="msg-bubble">${formatAIResponse(data.response || 'Sorry, I couldn\'t process that. Please try again.')}</div>
         </div>
     `;
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
