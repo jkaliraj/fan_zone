@@ -734,13 +734,17 @@ async function loadConnections() {
 
     list.innerHTML = uniqueConns.map(c => {
         const otherUser = c.user_id_1 === userId ? c.user_id_2 : c.user_id_1;
+        const initial = (otherUser || '?')[0].toUpperCase();
+        const reason = c.reason || 'Cricket connection';
         return `
             <div class="connection-card">
-                <div class="fan-avatar">🤝</div>
-                <div>
-                    <div class="fan-name">Connected with <strong>${escHtml(otherUser)}</strong></div>
-                    <div class="conn-reason">${escHtml(c.reason || 'Cricket connection')}</div>
-                    <div class="conn-date">${timeAgo(c.created_at)}</div>
+                <div class="conn-avatar">${escHtml(initial)}</div>
+                <div class="conn-info">
+                    <div class="conn-name">${escHtml(otherUser)}</div>
+                    <div class="conn-reason">${escHtml(reason)}</div>
+                </div>
+                <div class="conn-meta">
+                    <span class="conn-date">${timeAgo(c.created_at)}</span>
                 </div>
             </div>
         `;
