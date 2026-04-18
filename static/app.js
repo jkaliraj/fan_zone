@@ -307,6 +307,13 @@ async function getAIAnalysis(matchId) {
 }
 
 // ── Discussions ──────────────────────────────────────────────
+const REACTION_EMOJIS = [
+    { emoji: '🔥', code: '1f525' },
+    { emoji: '💯', code: '1f4af' },
+    { emoji: '😢', code: '1f622' },
+    { emoji: '🎉', code: '1f389' },
+    { emoji: '👏', code: '1f44f' },
+];
 const TEAM_ABBR = {
     'chennai super kings': 'CSK', 'mumbai indians': 'MI', 'royal challengers bengaluru': 'RCB',
     'royal challengers bangalore': 'RCB', 'kolkata knight riders': 'KKR', 'delhi capitals': 'DC',
@@ -483,8 +490,8 @@ function renderDiscussion(d) {
             <div class="disc-content">${escHtml(d.content)}</div>
             ${tags.length ? `<div class="disc-tags">${tags.map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}</div>` : ''}
             <div class="disc-reactions">
-                ${['🔥', '💯', '😢', '🎉', '👏'].map(e =>
-                    `<button class="reaction-btn" onclick="reactToDiscussion('${d.discussion_id}', '${e}')">${e} <span>${reactions[e] || 0}</span></button>`
+                ${REACTION_EMOJIS.map(({emoji, code}) =>
+                    `<button class="reaction-btn" onclick="reactToDiscussion('${d.discussion_id}', '${emoji}')"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/${code}/512.webp" class="noto-emoji" alt="${emoji}"> <span>${reactions[emoji] || 0}</span></button>`
                 ).join('')}
             </div>
             ${replies.length ? `

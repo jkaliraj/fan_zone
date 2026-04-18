@@ -566,7 +566,7 @@ select.input {
 .reaction-btn {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.3rem;
     padding: 0.3rem 0.6rem;
     background: rgba(255,255,255,0.03);
     border: 1px solid var(--border);
@@ -578,7 +578,15 @@ select.input {
     font-family: var(--font);
 }
 
+.noto-emoji {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+
 .reaction-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
+.reaction-btn:hover .noto-emoji { transform: scale(1.2); }
 .reaction-btn:active { animation: reaction-pop 0.35s ease; }
 
 @keyframes reaction-pop {
