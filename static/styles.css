@@ -1207,8 +1207,8 @@ select.input {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(100vh - 80px);
-    padding-top: 0.5rem;
+    min-height: calc(100vh - 60px);
+    padding-top: 1rem;
     padding-bottom: 1rem;
 }
 
@@ -1222,8 +1222,8 @@ select.input {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 120px);
-    max-height: 680px;
+    height: calc(100vh - 100px);
+    max-height: 640px;
     box-shadow: 0 2px 24px rgba(0,0,0,0.12);
 }
 
