@@ -1,6 +1,6 @@
 # FanZone AI — Indian Cricket Fan Connection Platform
 
-> **1st Innings Challenge** | Google ADK Hackathon — Gen AI Academy APAC Edition
+> **1st Innings Challenge** | Google ADK Hackathon
 
 A multi-agent AI platform that enables Indian cricket fans to form meaningful connections around shared team loyalties and live match experiences — powered by **Gemini 2.5 Flash**, **Google ADK**, **real-time CricAPI data**, and **Cloud Firestore**.
 
@@ -302,4 +302,4 @@ gcloud run deploy fanzone-ai \
 
 ---
 
-Built with **Google Gemini**, **Google ADK**, **Cloud Firestore**, **Cloud Run**, and **CricAPI** for the 1st Innings Challenge — Gen AI Academy APAC Edition.
+Built with **Google Gemini**, **Google ADK**, **Cloud Firestore**, **Cloud Run**, and **CricAPI** for the 1st Innings Challenge.

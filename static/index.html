@@ -92,22 +92,15 @@
             <button class="btn btn-sm btn-primary" id="btnNewDiscussion" onclick="toggleNewDiscussion()">+ New Thread</button>
         </div>
 
-        <!-- Live Score Ticker -->
-        <div class="discuss-live-ticker" id="discussLiveTicker">
-            <div class="ticker-header">
-                <span class="ticker-label"><span class="pulse"></span> Live Scores</span>
-            </div>
-            <div class="ticker-matches" id="tickerMatches">
-                <div class="loading-spinner" style="font-size:0.8rem;">Loading live scores...</div>
-            </div>
+        <!-- Match Cards -->
+        <div class="discuss-match-grid" id="discussMatchGrid">
+            <div class="loading-spinner">Loading matches...</div>
         </div>
 
-        <!-- Match Picker -->
-        <div class="match-picker">
-            <div class="picker-label">Select a match to discuss</div>
-            <select id="discMatchSelect" class="input match-select" onchange="onMatchSelected()">
-                <option value="">Choose a match...</option>
-            </select>
+        <!-- Selected Match Indicator -->
+        <div class="selected-match-bar hidden" id="selectedMatchBar">
+            <span class="selected-match-label" id="selectedMatchLabel"></span>
+            <button class="btn btn-sm btn-outline" onclick="clearMatchSelection()">✕ Clear</button>
         </div>
 
         <!-- New Discussion Form -->
@@ -125,7 +118,7 @@
         </div>
 
         <div id="discussionsList">
-            <div class="empty-state">Select a match above to see fan discussions</div>
+            <div class="empty-state">Click on a match above to see fan discussions</div>
         </div>
     </section>
 

@@ -93,14 +93,24 @@ async def api_live_scores():
                 m.setdefault("t1", teams[0] if teams else "")
                 m.setdefault("t2", teams[1] if len(teams) > 1 else "")
                 m.setdefault("ms", "live" if (m.get("matchStarted") and not m.get("matchEnded")) else "result")
-                # Build t1s/t2s from score array
+                # Build t1s/t2s from score array (deduplicated)
+                seen_innings = set()
+                t1_scores = []
+                t2_scores = []
                 for sc in m.get("score", []):
-                    inning = sc.get("inning", "").lower()
+                    inning = sc.get("inning", "")
+                    if inning in seen_innings:
+                        continue
+                    seen_innings.add(inning)
                     score_str = f"{sc.get('r', 0)}/{sc.get('w', 0)} ({sc.get('o', 0)})"
-                    if teams and teams[0].lower().split()[0] in inning:
-                        m["t1s"] = m.get("t1s", "") + (" & " if m.get("t1s") else "") + score_str
-                    elif len(teams) > 1 and teams[1].lower().split()[0] in inning:
-                        m["t2s"] = m.get("t2s", "") + (" & " if m.get("t2s") else "") + score_str
+                    if teams and teams[0].lower().split()[0] in inning.lower():
+                        t1_scores.append(score_str)
+                    elif len(teams) > 1 and teams[1].lower().split()[0] in inning.lower():
+                        t2_scores.append(score_str)
+                if t1_scores:
+                    m["t1s"] = " & ".join(t1_scores)
+                if t2_scores:
+                    m["t2s"] = " & ".join(t2_scores)
                 # Also extract team images
                 for ti in m.get("teamInfo", []):
                     if teams and ti.get("name") == teams[0]:
@@ -129,13 +139,23 @@ async def api_current_matches():
             teams = m.get("teams", [])
             m.setdefault("t1", teams[0] if teams else "")
             m.setdefault("t2", teams[1] if len(teams) > 1 else "")
+            seen_innings = set()
+            t1_scores = []
+            t2_scores = []
             for sc in m.get("score", []):
-                inning = sc.get("inning", "").lower()
+                inning = sc.get("inning", "")
+                if inning in seen_innings:
+                    continue
+                seen_innings.add(inning)
                 score_str = f"{sc.get('r', 0)}/{sc.get('w', 0)} ({sc.get('o', 0)})"
-                if teams and teams[0].lower().split()[0] in inning:
-                    m["t1s"] = m.get("t1s", "") + (" & " if m.get("t1s") else "") + score_str
-                elif len(teams) > 1 and teams[1].lower().split()[0] in inning:
-                    m["t2s"] = m.get("t2s", "") + (" & " if m.get("t2s") else "") + score_str
+                if teams and teams[0].lower().split()[0] in inning.lower():
+                    t1_scores.append(score_str)
+                elif len(teams) > 1 and teams[1].lower().split()[0] in inning.lower():
+                    t2_scores.append(score_str)
+            if t1_scores:
+                m["t1s"] = " & ".join(t1_scores)
+            if t2_scores:
+                m["t2s"] = " & ".join(t2_scores)
         return {"matches": matches, "count": len(matches)}
     return {"matches": [], "count": 0, "error": result.get("error", "API unavailable")}
 

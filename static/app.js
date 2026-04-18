@@ -308,102 +308,100 @@ async function getAIAnalysis(matchId) {
 
 // ── Discussions ──────────────────────────────────────────────
 let discussMatches = []; // cached matches for the discuss page
+let selectedDiscussMatchId = null;
 
 async function loadDiscussPage() {
-    // Load live ticker + match picker
     const data = await apiFetch('/live-scores');
     const scores = data.scores || [];
     discussMatches = scores;
 
-    // Render ticker
-    const ticker = document.getElementById('tickerMatches');
+    const grid = document.getElementById('discussMatchGrid');
+
     if (scores.length === 0) {
-        ticker.innerHTML = '<div style="padding:0.5rem;font-size:0.8rem;color:var(--text-muted);">No live matches right now</div>';
-    } else {
-        ticker.innerHTML = scores.map(s => {
-            const isLive = s.ms === 'live' || (s.matchStarted && !s.matchEnded);
-            const t1 = s.t1 || (s.teams && s.teams[0]) || 'Team 1';
-            const t2 = s.t2 || (s.teams && s.teams[1]) || 'Team 2';
-            const t1s = s.t1s || '';
-            const t2s = s.t2s || '';
-            const matchId = s.id || '';
-            return `
-                <div class="ticker-item ${isLive ? 'ticker-live' : ''}" onclick="selectMatchForDiscuss('${matchId}')">
-                    ${isLive ? '<span class="ticker-live-dot"><span class="pulse"></span></span>' : ''}
-                    <div class="ticker-teams">
-                        <span class="ticker-team">${escHtml(t1)}</span>
-                        <span class="ticker-vs">vs</span>
-                        <span class="ticker-team">${escHtml(t2)}</span>
-                    </div>
-                    <div class="ticker-score">
-                        ${t1s ? `<span>${escHtml(t1s)}</span>` : ''}
-                        ${t2s ? `<span>${escHtml(t2s)}</span>` : ''}
-                    </div>
-                    <div class="ticker-status ${isLive ? 'live' : ''}">${escHtml(s.status || (isLive ? 'Live' : 'Completed'))}</div>
-                </div>
-            `;
-        }).join('');
+        grid.innerHTML = '<div class="empty-state">No matches available right now. Check back during IPL or India match time!</div>';
+        return;
     }
 
-    // Populate match dropdown
-    const select = document.getElementById('discMatchSelect');
-    const currentVal = select.value;
-    select.innerHTML = '<option value="">Choose a match...</option>';
-    scores.forEach(s => {
+    grid.innerHTML = scores.map(s => {
+        const isLive = s.ms === 'live' || (s.matchStarted && !s.matchEnded);
+        const isUpcoming = !s.matchStarted && !s.matchEnded;
         const t1 = s.t1 || (s.teams && s.teams[0]) || 'Team 1';
         const t2 = s.t2 || (s.teams && s.teams[1]) || 'Team 2';
-        const isLive = s.ms === 'live' || (s.matchStarted && !s.matchEnded);
-        const label = `${isLive ? '🔴 ' : ''}${t1} vs ${t2} — ${s.matchType || 't20'}`;
-        const opt = document.createElement('option');
-        opt.value = s.id || '';
-        opt.textContent = label;
-        select.appendChild(opt);
-    });
-    if (currentVal) select.value = currentVal;
+        const t1s = s.t1s || '';
+        const t2s = s.t2s || '';
+        const matchId = s.id || '';
+        const isSelected = matchId === selectedDiscussMatchId;
+        const startTime = s.dateTimeGMT ? new Date(s.dateTimeGMT).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+        return `
+            <div class="discuss-match-card ${isLive ? 'dm-live' : ''} ${isSelected ? 'dm-selected' : ''}" onclick="selectDiscussMatch('${matchId}')">
+                ${isLive ? '<div class="dm-live-badge"><span class="pulse"></span> LIVE</div>' : ''}
+                <div class="dm-teams">
+                    <span class="dm-team">${escHtml(t1)}</span>
+                    <span class="dm-vs">vs</span>
+                    <span class="dm-team">${escHtml(t2)}</span>
+                </div>
+                ${t1s || t2s ? `
+                    <div class="dm-scores">
+                        ${t1s ? `<div class="dm-score-line">${escHtml(t1s)}</div>` : ''}
+                        ${t2s ? `<div class="dm-score-line">${escHtml(t2s)}</div>` : ''}
+                    </div>
+                ` : ''}
+                ${isUpcoming && startTime ? `<div class="dm-upcoming">🕐 ${escHtml(startTime)}</div>` : ''}
+                <div class="dm-status ${isLive ? 'live' : ''}">${escHtml(s.status || (isLive ? 'In Progress' : isUpcoming ? 'Upcoming' : 'Completed'))}</div>
+            </div>
+        `;
+    }).join('');
+
+    // Restore selection if exists
+    if (selectedDiscussMatchId) {
+        loadDiscussions(selectedDiscussMatchId);
+    }
 }
 
-function selectMatchForDiscuss(matchId) {
-    const select = document.getElementById('discMatchSelect');
-    select.value = matchId;
-    onMatchSelected();
-}
-
-function onMatchSelected() {
-    const matchId = document.getElementById('discMatchSelect').value;
-    if (!matchId) return;
-
-    // Update hidden match ID for new discussion form
+function selectDiscussMatch(matchId) {
+    selectedDiscussMatchId = matchId;
     document.getElementById('discMatchId').value = matchId;
 
-    // Update match preview in form
+    // Highlight selected card
+    document.querySelectorAll('.discuss-match-card').forEach(c => c.classList.remove('dm-selected'));
+    event.currentTarget?.classList.add('dm-selected');
+
+    // Show selected match bar
     const match = discussMatches.find(m => (m.id || '') === matchId);
     if (match) {
         const t1 = match.t1 || (match.teams && match.teams[0]) || '';
         const t2 = match.t2 || (match.teams && match.teams[1]) || '';
+        const bar = document.getElementById('selectedMatchBar');
+        document.getElementById('selectedMatchLabel').innerHTML = `💬 Showing discussions for: <strong>${escHtml(t1)} vs ${escHtml(t2)}</strong>`;
+        bar.classList.remove('hidden');
+
+        // Update form preview
         const preview = document.getElementById('discMatchPreview');
         preview.innerHTML = `<span class="preview-match-name">${escHtml(t1)} vs ${escHtml(t2)}</span> <span class="preview-match-type">${escHtml(match.matchType || '')} • ${escHtml(match.series || '')}</span>`;
     }
 
-    // Auto-load discussions for this match
     loadDiscussions(matchId);
+}
+
+function clearMatchSelection() {
+    selectedDiscussMatchId = null;
+    document.getElementById('discMatchId').value = '';
+    document.querySelectorAll('.discuss-match-card').forEach(c => c.classList.remove('dm-selected'));
+    document.getElementById('selectedMatchBar').classList.add('hidden');
+    document.getElementById('discussionsList').innerHTML = '<div class="empty-state">Click on a match above to see fan discussions</div>';
 }
 
 function toggleNewDiscussion() {
     const form = document.getElementById('newDiscussionForm');
     form.classList.toggle('hidden');
     if (!form.classList.contains('hidden')) {
-        // Pre-select current match
-        const matchId = document.getElementById('discMatchSelect').value;
-        if (matchId) {
-            document.getElementById('discMatchId').value = matchId;
-            const match = discussMatches.find(m => (m.id || '') === matchId);
-            if (match) {
-                const t1 = match.t1 || (match.teams && match.teams[0]) || '';
-                const t2 = match.t2 || (match.teams && match.teams[1]) || '';
-                document.getElementById('discTitle').value = '';
-                const preview = document.getElementById('discMatchPreview');
-                preview.innerHTML = `<span class="preview-match-name">${escHtml(t1)} vs ${escHtml(t2)}</span>`;
-            }
+        if (selectedDiscussMatchId) {
+            document.getElementById('discMatchId').value = selectedDiscussMatchId;
+        } else {
+            showToast('Select a match first', 'error');
+            form.classList.add('hidden');
+            return;
         }
         document.getElementById('discTitle').focus();
     }
@@ -411,11 +409,8 @@ function toggleNewDiscussion() {
 
 function startMatchDiscussion(matchId, matchName) {
     switchSection('discuss');
-    // Wait for discuss page to load, then select match
     setTimeout(() => {
-        const select = document.getElementById('discMatchSelect');
-        select.value = matchId;
-        onMatchSelected();
+        selectDiscussMatch(matchId);
         document.getElementById('newDiscussionForm').classList.remove('hidden');
         document.getElementById('discTitle').value = '';
         document.getElementById('discContent').focus();
@@ -457,7 +452,7 @@ async function createDiscussion() {
 
 async function loadDiscussions(matchId) {
     if (!matchId) {
-        matchId = document.getElementById('discMatchSelect').value;
+        matchId = selectedDiscussMatchId;
     }
     if (!matchId) return;
 

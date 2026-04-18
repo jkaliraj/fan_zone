@@ -681,27 +681,118 @@ select.input {
 
 .ticker-status.live { color: var(--g-red); font-weight: 600; }
 
-/* ── Match Picker ────────────────────────────────────────── */
-.match-picker {
+/* ── Discuss Match Cards ─────────────────────────────────── */
+.discuss-match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    max-height: 340px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.discuss-match-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
-
-.picker-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
-}
-
-.match-select {
-    width: 100%;
-    font-size: 0.9rem;
+    padding: 0.85rem 1rem;
     cursor: pointer;
+    transition: var(--transition);
+    position: relative;
 }
+
+.discuss-match-card:hover {
+    border-color: var(--accent);
+    background: rgba(66, 133, 244, 0.04);
+    transform: translateY(-1px);
+}
+
+.discuss-match-card.dm-selected {
+    border-color: var(--accent);
+    background: rgba(66, 133, 244, 0.08);
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.15);
+}
+
+.discuss-match-card.dm-live {
+    border-color: rgba(234, 67, 53, 0.3);
+}
+
+.dm-live-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--g-red);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dm-teams {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.dm-team {
+    font-weight: 600;
+    font-size: 0.82rem;
+}
+
+.dm-vs {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.dm-scores {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-bottom: 0.35rem;
+}
+
+.dm-score-line {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+.dm-upcoming {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+}
+
+.dm-status {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dm-status.live { color: var(--g-red); font-weight: 600; }
+
+/* ── Selected Match Bar ──────────────────────────────────── */
+.selected-match-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: rgba(66, 133, 244, 0.08);
+    border: 1px solid rgba(66, 133, 244, 0.2);
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+}
+
+.selected-match-label { color: var(--text-primary); }
 
 .disc-match-preview {
     padding: 0.5rem 0.75rem;
