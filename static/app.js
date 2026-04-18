@@ -718,12 +718,21 @@ async function loadConnections() {
     const data = await apiFetch(`/connection/${userId}`);
     const conns = data.connections || [];
 
-    if (conns.length === 0) {
+    // Deduplicate by other user (backward compat for old duplicate data)
+    const seen = new Set();
+    const uniqueConns = conns.filter(c => {
+        const otherUser = c.user_id_1 === userId ? c.user_id_2 : c.user_id_1;
+        if (seen.has(otherUser)) return false;
+        seen.add(otherUser);
+        return true;
+    });
+
+    if (uniqueConns.length === 0) {
         list.innerHTML = '<div class="empty-state">No connections yet. Explore teams and connect with fans!</div>';
         return;
     }
 
-    list.innerHTML = conns.map(c => {
+    list.innerHTML = uniqueConns.map(c => {
         const otherUser = c.user_id_1 === userId ? c.user_id_2 : c.user_id_1;
         return `
             <div class="connection-card">
