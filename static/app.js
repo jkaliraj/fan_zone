@@ -616,7 +616,7 @@ async function replyToDiscussion(discId) {
 // ── Fan Registration ─────────────────────────────────────────
 function loadFansPage() {
     if (currentUser) {
-        // Show profile, hide register form
+        // Show profile, hide register form, show connections
         document.getElementById('fanRegisterCard').classList.add('hidden');
         const profileCard = document.getElementById('fanProfileCard');
         profileCard.classList.remove('hidden');
@@ -625,13 +625,40 @@ function loadFansPage() {
         document.getElementById('profileTeam').textContent = currentUser.favorite_team || '';
         document.getElementById('profileLocation').textContent = currentUser.location ? `📍 ${currentUser.location}` : '';
         document.getElementById('profileBio').textContent = currentUser.bio || '';
-        // Auto-load connections
+        document.getElementById('connectionsCard').classList.remove('hidden');
         loadConnections();
     } else {
         document.getElementById('fanRegisterCard').classList.remove('hidden');
         document.getElementById('fanProfileCard').classList.add('hidden');
-        document.getElementById('connectionsList').innerHTML = '<div class="empty-state">Join FanZone to see your connections</div>';
+        document.getElementById('connectionsCard').classList.add('hidden');
     }
+}
+
+function switchAuthTab(tab) {
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+    document.getElementById('authLoginForm').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('authRegisterForm').classList.toggle('hidden', tab !== 'register');
+}
+
+async function loginFan() {
+    const userId = document.getElementById('loginUserId').value.trim();
+    if (!userId) {
+        showToast('Please enter your username', 'error');
+        return;
+    }
+    const data = await apiFetch(`/fan/${userId}`);
+    if (data.error) {
+        showToast('Username not found. Please register first.', 'error');
+        switchAuthTab('register');
+        document.getElementById('fanUserId').value = userId;
+        return;
+    }
+    currentUser = data;
+    localStorage.setItem('fanzone_user', JSON.stringify(data));
+    updateNavProfile();
+    loadFansPage();
+    showToast(`Welcome back, ${data.display_name}! 🏏`, 'success');
 }
 
 async function registerFan() {
@@ -830,10 +857,16 @@ async function loadConnections() {
                     <div class="conn-name">${escHtml(otherUser)}</div>
                     <div class="conn-reason">${escHtml(reason)}</div>
                 </div>
-                <button class="conn-unfollow" onclick="unfollowConnection('${escHtml(connId)}')" title="Unfollow">✕</button>
+                <button class="conn-unfollow" onclick="confirmUnfollow('${escHtml(connId)}', '${escHtml(otherUser)}')" title="Unfollow">✕</button>
             </div>
         `;
     }).join('');
+}
+
+function confirmUnfollow(connId, username) {
+    if (!connId) return;
+    const ok = confirm(`Unfollow ${username}? This will remove your connection.`);
+    if (ok) unfollowConnection(connId);
 }
 
 async function unfollowConnection(connId) {

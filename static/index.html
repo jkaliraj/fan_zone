@@ -139,28 +139,40 @@
         </div>
 
         <div class="fan-grid">
-            <!-- Register Card (hidden when logged in) -->
+            <!-- Auth Card (hidden when logged in) -->
             <div class="card fan-register-card" id="fanRegisterCard">
-                <h3>🏏 Join FanZone</h3>
-                <p>Register with your team loyalty to connect with fellow fans</p>
-                <input type="text" id="fanUserId" placeholder="Choose a username" class="input">
-                <input type="text" id="fanDisplayName" placeholder="Display name" class="input">
-                <select id="fanTeam" class="input">
-                    <option value="">Select your team</option>
-                    <option value="CSK">🟡 Chennai Super Kings</option>
-                    <option value="MI">🔵 Mumbai Indians</option>
-                    <option value="RCB">🔴 Royal Challengers Bangalore</option>
-                    <option value="KKR">🟣 Kolkata Knight Riders</option>
-                    <option value="RR">🩷 Rajasthan Royals</option>
-                    <option value="DC">🔷 Delhi Capitals</option>
-                    <option value="GT">⬛ Gujarat Titans</option>
-                    <option value="PBKS">🔴 Punjab Kings</option>
-                    <option value="SRH">🟠 Sunrisers Hyderabad</option>
-                    <option value="LSG">🩵 Lucknow Super Giants</option>
-                </select>
-                <input type="text" id="fanLocation" placeholder="Your city" class="input">
-                <textarea id="fanBio" placeholder="Your cricket bio..." class="input textarea"></textarea>
-                <button class="btn btn-primary btn-block" onclick="registerFan()">Register &amp; Join</button>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</button>
+                    <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Register</button>
+                </div>
+                <!-- Login Form -->
+                <div id="authLoginForm">
+                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.75rem;">Welcome back! Enter your username to continue.</p>
+                    <input type="text" id="loginUserId" placeholder="Your username" class="input">
+                    <button class="btn btn-primary btn-block" onclick="loginFan()">Login</button>
+                </div>
+                <!-- Register Form -->
+                <div id="authRegisterForm" class="hidden">
+                    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:0.75rem;">New here? Register to connect with fellow fans.</p>
+                    <input type="text" id="fanUserId" placeholder="Choose a username" class="input">
+                    <input type="text" id="fanDisplayName" placeholder="Display name" class="input">
+                    <select id="fanTeam" class="input">
+                        <option value="">Select your team</option>
+                        <option value="CSK">🟡 Chennai Super Kings</option>
+                        <option value="MI">🔵 Mumbai Indians</option>
+                        <option value="RCB">🔴 Royal Challengers Bangalore</option>
+                        <option value="KKR">🟣 Kolkata Knight Riders</option>
+                        <option value="RR">🩷 Rajasthan Royals</option>
+                        <option value="DC">🔷 Delhi Capitals</option>
+                        <option value="GT">⬛ Gujarat Titans</option>
+                        <option value="PBKS">🔴 Punjab Kings</option>
+                        <option value="SRH">🟠 Sunrisers Hyderabad</option>
+                        <option value="LSG">🩵 Lucknow Super Giants</option>
+                    </select>
+                    <input type="text" id="fanLocation" placeholder="Your city" class="input">
+                    <textarea id="fanBio" placeholder="Your cricket bio..." class="input textarea"></textarea>
+                    <button class="btn btn-primary btn-block" onclick="registerFan()">Register &amp; Join</button>
+                </div>
             </div>
             <div class="card team-explorer-card">
                 <h3>🔍 Explore Teams</h3>
@@ -179,11 +191,9 @@
                 <div id="teamInfoPanel"></div>
             </div>
         </div>
-        <div class="card" style="margin-top:1rem;">
+        <div class="card hidden" style="margin-top:1rem;" id="connectionsCard">
             <h3>🤝 My Connections</h3>
-            <div id="connectionsList" class="conn-grid">
-                <div class="empty-state">Join FanZone to see your connections</div>
-            </div>
+            <div id="connectionsList" class="conn-grid"></div>
         </div>
     </section>
 

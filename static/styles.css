@@ -807,6 +807,35 @@ select.input {
 .fan-register-card h3, .team-explorer-card h3 { margin-bottom: 0.5rem; }
 .fan-register-card p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem; }
 
+.auth-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 0.6rem 0;
+    background: none;
+    border: none;
+    font-family: var(--font);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: var(--transition);
+}
+
+.auth-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.auth-tab:hover { color: var(--text-primary); }
+
 .team-buttons {
     display: flex;
     flex-wrap: wrap;
