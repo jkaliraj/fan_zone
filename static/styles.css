@@ -589,6 +589,13 @@ select.input {
 .reaction-btn:hover .noto-emoji { transform: scale(1.2); }
 .reaction-btn:active { animation: reaction-pop 0.35s ease; }
 
+.reaction-active {
+    border-color: var(--accent);
+    background: rgba(66, 133, 244, 0.1);
+    color: var(--accent);
+    font-weight: 700;
+}
+
 @keyframes reaction-pop {
     0% { transform: scale(1); }
     30% { transform: scale(1.35); }

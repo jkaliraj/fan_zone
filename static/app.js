@@ -480,19 +480,23 @@ function renderDiscussion(d) {
     const reactions = d.reactions || {};
     const replies = d.replies || [];
     const tags = d.tags || [];
+    const userReactions = d.user_reactions || {};
+    const myReaction = userReactions[currentUser?.user_id || ''] || '';
 
     return `
-        <div class="discussion-card">
+        <div class="discussion-card" id="disc-${d.discussion_id}">
             <div class="disc-header">
                 <span class="disc-title">${escHtml(d.title)}</span>
             </div>
             <div class="disc-meta">by ${escHtml(d.user_id)} • ${timeAgo(d.created_at)}</div>
             <div class="disc-content">${escHtml(d.content)}</div>
             ${tags.length ? `<div class="disc-tags">${tags.map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}</div>` : ''}
-            <div class="disc-reactions">
-                ${REACTION_EMOJIS.map(({emoji, code}) =>
-                    `<button class="reaction-btn" onclick="reactToDiscussion('${d.discussion_id}', '${emoji}')"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/${code}/512.webp" class="noto-emoji" alt="${emoji}"> <span>${reactions[emoji] || 0}</span></button>`
-                ).join('')}
+            <div class="disc-reactions" data-disc-id="${d.discussion_id}">
+                ${REACTION_EMOJIS.map(({emoji, code}) => {
+                    const count = Math.max(0, reactions[emoji] || 0);
+                    const isActive = myReaction === emoji;
+                    return `<button class="reaction-btn ${isActive ? 'reaction-active' : ''}" data-emoji="${emoji}" data-code="${code}" onclick="reactToDiscussion('${d.discussion_id}', '${emoji}', this)"><img src="https://fonts.gstatic.com/s/e/notoemoji/latest/${code}/512.webp" class="noto-emoji" alt="${emoji}"> <span class="react-count">${count}</span></button>`;
+                }).join('')}
             </div>
             ${replies.length ? `
                 <div class="disc-replies">
@@ -512,16 +516,39 @@ function renderDiscussion(d) {
     `;
 }
 
-async function reactToDiscussion(discId, emoji) {
-    // Particle burst effect on the clicked button
-    const btn = event.currentTarget;
+async function reactToDiscussion(discId, emoji, btn) {
+    const userId = currentUser?.user_id || 'anonymous';
+    const container = btn.closest('.disc-reactions');
+    const wasActive = btn.classList.contains('reaction-active');
+
+    // Particle burst
     spawnEmojiParticles(btn, emoji);
 
-    await apiFetch(`/discussion/${discId}/react`, {
+    // Optimistic UI: update counts inline
+    // Remove active from any previously selected button in this discussion
+    const prevActive = container.querySelector('.reaction-active');
+    if (prevActive && prevActive !== btn) {
+        prevActive.classList.remove('reaction-active');
+        const prevCount = prevActive.querySelector('.react-count');
+        prevCount.textContent = Math.max(0, parseInt(prevCount.textContent) - 1);
+    }
+
+    const countEl = btn.querySelector('.react-count');
+    if (wasActive) {
+        // Toggle off
+        btn.classList.remove('reaction-active');
+        countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1);
+    } else {
+        // Toggle on
+        btn.classList.add('reaction-active');
+        countEl.textContent = parseInt(countEl.textContent) + 1;
+    }
+
+    // Send to server (fire and forget, already updated UI)
+    apiFetch(`/discussion/${discId}/react`, {
         method: 'POST',
-        body: JSON.stringify({ emoji }),
+        body: JSON.stringify({ emoji, user_id: userId }),
     });
-    loadDiscussions();
 }
 
 function spawnEmojiParticles(anchor, emoji) {

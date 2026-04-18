@@ -62,6 +62,7 @@ class ReplyRequest(BaseModel):
 
 class ReactionRequest(BaseModel):
     emoji: str
+    user_id: str = "anonymous"
 
 
 class ConnectionRequest(BaseModel):
@@ -286,7 +287,7 @@ async def api_reply(disc_id: str, req: ReplyRequest):
 
 @router.post("/discussion/{disc_id}/react")
 async def api_react(disc_id: str, req: ReactionRequest):
-    return add_reaction(disc_id, req.emoji)
+    return add_reaction(disc_id, req.emoji, req.user_id)
 
 
 @router.get("/discussion/suggest/{match_id}")

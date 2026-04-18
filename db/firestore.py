@@ -177,22 +177,58 @@ def add_reply(discussion_id: str, user_id: str, content: str) -> dict:
     return reply
 
 
-def add_reaction(discussion_id: str, emoji: str) -> dict:
-    """Add a reaction to a discussion."""
+def add_reaction(discussion_id: str, emoji: str, user_id: str = "anonymous") -> dict:
+    """Toggle a reaction: add if not reacted, switch if different emoji, remove if same emoji."""
     valid_emojis = ["🔥", "💯", "😢", "🎉", "👏"]
     if emoji not in valid_emojis:
         return {"error": f"Invalid reaction. Use one of: {valid_emojis}"}
+
     db = _get_db()
     if db:
         from google.cloud.firestore_v1 import Increment
-        db.collection("discussions").document(discussion_id).update({
-            f"reactions.{emoji}": Increment(1)
-        })
+        doc_ref = db.collection("discussions").document(discussion_id)
+        # Track who reacted with what in a sub-map
+        doc = doc_ref.get()
+        if not doc.exists:
+            return {"error": "Discussion not found"}
+        data = doc.to_dict()
+        user_reactions = data.get("user_reactions", {})
+        prev_emoji = user_reactions.get(user_id)
+
+        updates = {}
+        if prev_emoji == emoji:
+            # Same emoji: toggle off
+            updates[f"reactions.{emoji}"] = Increment(-1)
+            updates[f"user_reactions.{user_id}"] = ""
+            status = "removed"
+        else:
+            # Different or new: decrement old, increment new
+            if prev_emoji and prev_emoji in valid_emojis:
+                updates[f"reactions.{prev_emoji}"] = Increment(-1)
+            updates[f"reactions.{emoji}"] = Increment(1)
+            updates[f"user_reactions.{user_id}"] = emoji
+            status = "added"
+        doc_ref.update(updates)
     else:
         disc = _local_store["discussions"].get(discussion_id)
-        if disc:
+        if not disc:
+            return {"error": "Discussion not found"}
+        if "user_reactions" not in disc:
+            disc["user_reactions"] = {}
+        prev_emoji = disc["user_reactions"].get(user_id)
+
+        if prev_emoji == emoji:
+            disc["reactions"][emoji] = max(0, disc["reactions"].get(emoji, 0) - 1)
+            disc["user_reactions"][user_id] = ""
+            status = "removed"
+        else:
+            if prev_emoji and prev_emoji in valid_emojis:
+                disc["reactions"][prev_emoji] = max(0, disc["reactions"].get(prev_emoji, 0) - 1)
             disc["reactions"][emoji] = disc["reactions"].get(emoji, 0) + 1
-    return {"discussion_id": discussion_id, "reaction": emoji, "status": "added"}
+            disc["user_reactions"][user_id] = emoji
+            status = "added"
+
+    return {"discussion_id": discussion_id, "reaction": emoji, "status": status}
 
 
 # ── Connections ───────────────────────────────────────────────
