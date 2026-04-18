@@ -32,11 +32,17 @@ async def run_agent_chat(user_id: str, message: str) -> str:
         str: The agent's text response.
     """
     # Get or create session for this user
-    session = await _session_service.get_session(
+    existing = await _session_service.list_sessions(
         app_name=APP_NAME,
         user_id=user_id,
     )
-    if session is None:
+    if existing.sessions:
+        session = await _session_service.get_session(
+            app_name=APP_NAME,
+            user_id=user_id,
+            session_id=existing.sessions[0].id,
+        )
+    else:
         session = await _session_service.create_session(
             app_name=APP_NAME,
             user_id=user_id,

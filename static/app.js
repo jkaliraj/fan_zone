@@ -9,8 +9,27 @@ const API = '/api';
 let currentUser = null;
 let currentSection = 'live';
 
+// ── Theme ────────────────────────────────────────────────────
+function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const next = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('fanzone_theme', next);
+    document.getElementById('themeIcon').textContent = next === 'light' ? '☀️' : '🌙';
+}
+
+function loadTheme() {
+    const saved = localStorage.getItem('fanzone_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    const icon = document.getElementById('themeIcon');
+    if (icon) icon.textContent = saved === 'light' ? '☀️' : '🌙';
+}
+
 // ── Init ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+    loadTheme();
+
     // Check saved user
     const saved = localStorage.getItem('fanzone_user');
     if (saved) {
@@ -412,8 +431,13 @@ async function registerFan() {
 
 function updateNavProfile() {
     const container = document.getElementById('navProfile');
+    const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const themeIcon = theme === 'light' ? '☀️' : '🌙';
     if (currentUser) {
         container.innerHTML = `
+            <button class="theme-toggle" onclick="toggleTheme()" title="Switch theme">
+                <span class="theme-icon" id="themeIcon">${themeIcon}</span>
+            </button>
             <div class="user-badge">
                 <span class="team-dot"></span>
                 <span>${escHtml(currentUser.display_name)} • ${escHtml(currentUser.favorite_team)}</span>
