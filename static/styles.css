@@ -839,18 +839,17 @@ select.input {
 .team-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-bottom: 1rem;
+    gap: 0.35rem;
 }
 
 .team-btn {
-    padding: 0.4rem 0.85rem;
+    padding: 0.3rem 0.7rem;
     background: var(--bg-secondary);
     color: var(--text-primary);
     border: 2px solid var(--team-color, var(--border));
     border-radius: 999px;
     font-family: var(--font);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     cursor: pointer;
     transition: var(--transition);
@@ -862,7 +861,18 @@ select.input {
     box-shadow: 0 0 15px color-mix(in srgb, var(--team-color) 40%, transparent);
 }
 
-.team-info-panel { min-height: 100px; }
+.team-btn-active {
+    background: var(--team-color);
+    color: #fff;
+    box-shadow: 0 0 12px color-mix(in srgb, var(--team-color) 35%, transparent);
+}
+
+.team-info-panel {
+    max-height: 280px;
+    overflow-y: auto;
+    transition: max-height 0.3s ease;
+    scrollbar-width: thin;
+}
 
 .team-info {
     padding: 1rem;

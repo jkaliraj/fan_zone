@@ -632,6 +632,10 @@ function loadFansPage() {
         document.getElementById('fanProfileCard').classList.add('hidden');
         document.getElementById('connectionsCard').classList.add('hidden');
     }
+    // Default load CSK team info
+    if (!document.getElementById('teamInfoPanel').innerHTML.trim() || document.getElementById('teamInfoPanel').querySelector('.loading-spinner')) {
+        loadTeamInfo('CSK');
+    }
 }
 
 function switchAuthTab(tab) {
@@ -729,6 +733,11 @@ function updateNavProfile() {
 
 // ── Team Info ────────────────────────────────────────────────
 async function loadTeamInfo(teamCode) {
+    // Highlight selected team button
+    document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('team-btn-active'));
+    const activeBtn = document.querySelector(`.team-btn[data-team="${teamCode}"]`);
+    if (activeBtn) activeBtn.classList.add('team-btn-active');
+
     const panel = document.getElementById('teamInfoPanel');
     panel.innerHTML = '<div class="loading-spinner">Loading...</div>';
 

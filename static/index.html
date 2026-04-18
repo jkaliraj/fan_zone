@@ -174,22 +174,26 @@
                     <button class="btn btn-primary btn-block" onclick="registerFan()">Register &amp; Join</button>
                 </div>
             </div>
-            <div class="card team-explorer-card">
-                <h3>🔍 Explore Teams</h3>
+        </div>
+
+        <!-- Explore Teams (full width below) -->
+        <div class="card team-explorer-card" style="margin-top:1rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+                <h3 style="margin:0;">🔍 Explore Teams</h3>
                 <div class="team-buttons" id="teamButtons">
-                    <button class="team-btn" style="--team-color:#FFCB05" onclick="loadTeamInfo('CSK')">CSK</button>
-                    <button class="team-btn" style="--team-color:#004BA0" onclick="loadTeamInfo('MI')">MI</button>
-                    <button class="team-btn" style="--team-color:#D4213D" onclick="loadTeamInfo('RCB')">RCB</button>
-                    <button class="team-btn" style="--team-color:#3A225D" onclick="loadTeamInfo('KKR')">KKR</button>
-                    <button class="team-btn" style="--team-color:#EA1A85" onclick="loadTeamInfo('RR')">RR</button>
-                    <button class="team-btn" style="--team-color:#0078BC" onclick="loadTeamInfo('DC')">DC</button>
-                    <button class="team-btn" style="--team-color:#1C1C2B" onclick="loadTeamInfo('GT')">GT</button>
-                    <button class="team-btn" style="--team-color:#DD1F2D" onclick="loadTeamInfo('PBKS')">PBKS</button>
-                    <button class="team-btn" style="--team-color:#FF822A" onclick="loadTeamInfo('SRH')">SRH</button>
-                    <button class="team-btn" style="--team-color:#59B3E6" onclick="loadTeamInfo('LSG')">LSG</button>
+                    <button class="team-btn team-btn-active" data-team="CSK" style="--team-color:#FFCB05" onclick="loadTeamInfo('CSK')">CSK</button>
+                    <button class="team-btn" data-team="MI" style="--team-color:#004BA0" onclick="loadTeamInfo('MI')">MI</button>
+                    <button class="team-btn" data-team="RCB" style="--team-color:#D4213D" onclick="loadTeamInfo('RCB')">RCB</button>
+                    <button class="team-btn" data-team="KKR" style="--team-color:#3A225D" onclick="loadTeamInfo('KKR')">KKR</button>
+                    <button class="team-btn" data-team="RR" style="--team-color:#EA1A85" onclick="loadTeamInfo('RR')">RR</button>
+                    <button class="team-btn" data-team="DC" style="--team-color:#0078BC" onclick="loadTeamInfo('DC')">DC</button>
+                    <button class="team-btn" data-team="GT" style="--team-color:#1C1C2B" onclick="loadTeamInfo('GT')">GT</button>
+                    <button class="team-btn" data-team="PBKS" style="--team-color:#DD1F2D" onclick="loadTeamInfo('PBKS')">PBKS</button>
+                    <button class="team-btn" data-team="SRH" style="--team-color:#FF822A" onclick="loadTeamInfo('SRH')">SRH</button>
+                    <button class="team-btn" data-team="LSG" style="--team-color:#59B3E6" onclick="loadTeamInfo('LSG')">LSG</button>
                 </div>
-                <div id="teamInfoPanel"></div>
             </div>
+            <div id="teamInfoPanel" class="team-info-panel"></div>
         </div>
         <div class="card hidden" style="margin-top:1rem;" id="connectionsCard">
             <h3>🤝 My Connections</h3>
