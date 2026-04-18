@@ -506,11 +506,57 @@ function renderDiscussion(d) {
 }
 
 async function reactToDiscussion(discId, emoji) {
+    // Particle burst effect on the clicked button
+    const btn = event.currentTarget;
+    spawnEmojiParticles(btn, emoji);
+
     await apiFetch(`/discussion/${discId}/react`, {
         method: 'POST',
         body: JSON.stringify({ emoji }),
     });
     loadDiscussions();
+}
+
+function spawnEmojiParticles(anchor, emoji) {
+    const rect = anchor.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const count = 6;
+
+    for (let i = 0; i < count; i++) {
+        const el = document.createElement('span');
+        el.textContent = emoji;
+        el.style.cssText = `
+            position:fixed;left:${cx}px;top:${cy}px;
+            font-size:${14 + Math.random() * 10}px;
+            pointer-events:none;z-index:9999;
+            opacity:1;transition:none;
+        `;
+        document.body.appendChild(el);
+
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+        const speed = 60 + Math.random() * 80;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed - 40; // upward bias
+        const gravity = 220;
+        const duration = 700 + Math.random() * 300;
+        const start = performance.now();
+
+        function tick(now) {
+            const t = (now - start) / 1000;
+            if (t > duration / 1000) { el.remove(); return; }
+            const x = cx + vx * t;
+            const y = cy + vy * t + 0.5 * gravity * t * t;
+            const progress = t / (duration / 1000);
+            const scale = 1 - progress * 0.4;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.style.opacity = 1 - progress;
+            el.style.transform = `scale(${scale}) rotate(${progress * 120}deg)`;
+            requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    }
 }
 
 async function replyToDiscussion(discId) {
