@@ -94,14 +94,16 @@ async function loadLiveScores() {
 
 function renderScoreCard(s) {
     const isLive = s.ms === 'live' || (s.matchStarted && !s.matchEnded);
-    const statusClass = isLive ? 'live' : (s.matchEnded ? 'completed' : 'upcoming');
+    const isCompleted = s.matchEnded || s.ms === 'result';
+    const statusClass = isLive ? 'live' : (isCompleted ? 'completed' : 'upcoming');
     const matchId = s.id || '';
 
-    // Extract team scores from the 't1s' / 't2s' or score fields
-    const t1 = s.t1 || s.team1 || 'Team 1';
-    const t2 = s.t2 || s.team2 || 'Team 2';
+    // Extract team names
+    const t1 = s.t1 || (s.teams && s.teams[0]) || 'Team 1';
+    const t2 = s.t2 || (s.teams && s.teams[1]) || 'Team 2';
     const t1s = s.t1s || '';
     const t2s = s.t2s || '';
+    const venue = s.venue || '';
 
     return `
         <div class="match-card" onclick="viewMatchDetail('${matchId}')">
@@ -112,7 +114,8 @@ function renderScoreCard(s) {
                 ${t1s ? `${escHtml(t1)}: <strong>${escHtml(t1s)}</strong>` : ''}
                 ${t2s ? `<br>${escHtml(t2)}: <strong>${escHtml(t2s)}</strong>` : ''}
             </div>
-            <span class="match-status ${statusClass}">${escHtml(s.status || (isLive ? 'Live' : 'Completed'))}</span>
+            <span class="match-status ${statusClass}">${escHtml(s.status || (isLive ? 'Live' : isCompleted ? 'Completed' : 'Upcoming'))}</span>
+            ${venue ? `<div class="match-venue">📍 ${escHtml(venue)}</div>` : ''}
             <div class="match-actions">
                 <button class="btn btn-sm btn-ghost" onclick="event.stopPropagation(); startMatchDiscussion('${matchId}', '${escAttr(t1)} vs ${escAttr(t2)}')">💬 Discuss</button>
                 <button class="btn btn-sm btn-ghost" onclick="event.stopPropagation(); getAIAnalysis('${matchId}')">🤖 AI Analysis</button>

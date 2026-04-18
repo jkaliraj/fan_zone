@@ -80,12 +80,42 @@ class ChatRequest(BaseModel):
 
 @router.get("/live-scores")
 async def api_live_scores():
-    """Real-time live scores — Indian cricket only."""
-    result = get_live_scores()
-    if result.get("status") == "success":
-        scores = [s for s in result.get("data", []) if is_india_match(s)]
-        return {"scores": scores, "count": len(scores)}
-    return {"scores": [], "count": 0, "error": result.get("error", "API unavailable")}
+    """Real-time live scores — Indian cricket only.
+    Uses currentMatches (has live/recent IPL data) + cricScore as supplement."""
+    matches = []
+    # Primary: currentMatches has actual live IPL matches
+    cm = get_current_matches()
+    if cm.get("status") == "success":
+        for m in cm.get("data", []):
+            if is_india_match(m):
+                # Normalize fields for frontend compatibility
+                teams = m.get("teams", [])
+                m.setdefault("t1", teams[0] if teams else "")
+                m.setdefault("t2", teams[1] if len(teams) > 1 else "")
+                m.setdefault("ms", "live" if (m.get("matchStarted") and not m.get("matchEnded")) else "result")
+                # Build t1s/t2s from score array
+                for sc in m.get("score", []):
+                    inning = sc.get("inning", "").lower()
+                    score_str = f"{sc.get('r', 0)}/{sc.get('w', 0)} ({sc.get('o', 0)})"
+                    if teams and teams[0].lower().split()[0] in inning:
+                        m["t1s"] = m.get("t1s", "") + (" & " if m.get("t1s") else "") + score_str
+                    elif len(teams) > 1 and teams[1].lower().split()[0] in inning:
+                        m["t2s"] = m.get("t2s", "") + (" & " if m.get("t2s") else "") + score_str
+                # Also extract team images
+                for ti in m.get("teamInfo", []):
+                    if teams and ti.get("name") == teams[0]:
+                        m["t1img"] = ti.get("img", "")
+                    elif len(teams) > 1 and ti.get("name") == teams[1]:
+                        m["t2img"] = ti.get("img", "")
+                matches.append(m)
+    # Supplement with cricScore for upcoming fixtures
+    cs = get_live_scores()
+    if cs.get("status") == "success":
+        seen_ids = {m.get("id") for m in matches}
+        for s in cs.get("data", []):
+            if is_india_match(s) and s.get("id") not in seen_ids:
+                matches.append(s)
+    return {"scores": matches, "count": len(matches)}
 
 
 @router.get("/current-matches")
@@ -94,6 +124,18 @@ async def api_current_matches():
     result = get_current_matches()
     if result.get("status") == "success":
         matches = [m for m in result.get("data", []) if is_india_match(m)]
+        # Normalize score data for frontend
+        for m in matches:
+            teams = m.get("teams", [])
+            m.setdefault("t1", teams[0] if teams else "")
+            m.setdefault("t2", teams[1] if len(teams) > 1 else "")
+            for sc in m.get("score", []):
+                inning = sc.get("inning", "").lower()
+                score_str = f"{sc.get('r', 0)}/{sc.get('w', 0)} ({sc.get('o', 0)})"
+                if teams and teams[0].lower().split()[0] in inning:
+                    m["t1s"] = m.get("t1s", "") + (" & " if m.get("t1s") else "") + score_str
+                elif len(teams) > 1 and teams[1].lower().split()[0] in inning:
+                    m["t2s"] = m.get("t2s", "") + (" & " if m.get("t2s") else "") + score_str
         return {"matches": matches, "count": len(matches)}
     return {"matches": [], "count": 0, "error": result.get("error", "API unavailable")}
 
@@ -109,8 +151,8 @@ async def api_match_detail(match_id: str):
 
 @router.get("/recent-matches")
 async def api_recent_matches(count: int = Query(default=10, ge=1, le=25)):
-    """Recent Indian cricket matches only."""
-    result = get_all_matches(offset=0)
+    """Recent Indian cricket matches — uses currentMatches which has live/recent IPL data."""
+    result = get_current_matches()
     if result.get("status") == "success":
         matches = [m for m in result.get("data", []) if is_india_match(m)]
         matches.sort(key=lambda x: x.get("dateTimeGMT", ""), reverse=True)

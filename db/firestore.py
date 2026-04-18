@@ -52,7 +52,10 @@ def create_fan_profile(user_id: str, display_name: str, favorite_team: str,
     }
     db = _get_db()
     if db:
-        db.collection("fan_profiles").document(user_id).set(profile)
+        try:
+            db.collection("fan_profiles").document(user_id).set(profile)
+        except Exception:
+            _in_memory_store["fan_profiles"][user_id] = profile
     else:
         _in_memory_store["fan_profiles"][user_id] = profile
     return profile
@@ -62,12 +65,14 @@ def get_fan_profile(user_id: str) -> dict:
     """Retrieve a fan profile."""
     db = _get_db()
     if db:
-        doc = db.collection("fan_profiles").document(user_id).get()
-        if doc.exists:
-            return doc.to_dict()
-    else:
-        if user_id in _in_memory_store["fan_profiles"]:
-            return _in_memory_store["fan_profiles"][user_id]
+        try:
+            doc = db.collection("fan_profiles").document(user_id).get()
+            if doc.exists:
+                return doc.to_dict()
+        except Exception:
+            pass
+    if user_id in _in_memory_store["fan_profiles"]:
+        return _in_memory_store["fan_profiles"][user_id]
     return {"error": f"Fan profile '{user_id}' not found."}
 
 
@@ -76,12 +81,15 @@ def find_fans_by_team(team_code: str) -> list:
     db = _get_db()
     fans = []
     if db:
-        docs = db.collection("fan_profiles").where(
-            "teams_following", "array_contains", team_code
-        ).stream()
-        for doc in docs:
-            fans.append(doc.to_dict())
-    else:
+        try:
+            docs = db.collection("fan_profiles").where(
+                "teams_following", "array_contains", team_code
+            ).stream()
+            for doc in docs:
+                fans.append(doc.to_dict())
+        except Exception:
+            pass
+    if not fans:
         for profile in _in_memory_store["fan_profiles"].values():
             if team_code in profile.get("teams_following", []):
                 fans.append(profile)
@@ -117,7 +125,10 @@ def create_discussion(match_id: str, user_id: str, title: str,
     }
     db = _get_db()
     if db:
-        db.collection("discussions").document(disc_id).set(discussion)
+        try:
+            db.collection("discussions").document(disc_id).set(discussion)
+        except Exception:
+            _in_memory_store["discussions"][disc_id] = discussion
     else:
         _in_memory_store["discussions"][disc_id] = discussion
     return discussion
@@ -128,12 +139,15 @@ def get_discussions_for_match(match_id: str) -> list:
     db = _get_db()
     discussions = []
     if db:
-        docs = db.collection("discussions").where(
-            "match_id", "==", match_id
-        ).stream()
-        for doc in docs:
-            discussions.append(doc.to_dict())
-    else:
+        try:
+            docs = db.collection("discussions").where(
+                "match_id", "==", match_id
+            ).stream()
+            for doc in docs:
+                discussions.append(doc.to_dict())
+        except Exception:
+            pass
+    if not discussions:
         for disc in _in_memory_store["discussions"].values():
             if disc.get("match_id") == match_id:
                 discussions.append(disc)
@@ -150,10 +164,15 @@ def add_reply(discussion_id: str, user_id: str, content: str) -> dict:
     }
     db = _get_db()
     if db:
-        from google.cloud.firestore_v1 import ArrayUnion
-        db.collection("discussions").document(discussion_id).update({
-            "replies": ArrayUnion([reply])
-        })
+        try:
+            from google.cloud.firestore_v1 import ArrayUnion
+            db.collection("discussions").document(discussion_id).update({
+                "replies": ArrayUnion([reply])
+            })
+        except Exception:
+            disc = _in_memory_store["discussions"].get(discussion_id)
+            if disc:
+                disc["replies"].append(reply)
     else:
         disc = _in_memory_store["discussions"].get(discussion_id)
         if disc:
@@ -168,10 +187,15 @@ def add_reaction(discussion_id: str, emoji: str) -> dict:
         return {"error": f"Invalid reaction. Use one of: {valid_emojis}"}
     db = _get_db()
     if db:
-        from google.cloud.firestore_v1 import Increment
-        db.collection("discussions").document(discussion_id).update({
-            f"reactions.{emoji}": Increment(1)
-        })
+        try:
+            from google.cloud.firestore_v1 import Increment
+            db.collection("discussions").document(discussion_id).update({
+                f"reactions.{emoji}": Increment(1)
+            })
+        except Exception:
+            disc = _in_memory_store["discussions"].get(discussion_id)
+            if disc:
+                disc["reactions"][emoji] = disc["reactions"].get(emoji, 0) + 1
     else:
         disc = _in_memory_store["discussions"].get(discussion_id)
         if disc:
@@ -196,7 +220,10 @@ def create_connection(user_id_1: str, user_id_2: str, match_id: str,
     }
     db = _get_db()
     if db:
-        db.collection("connections").document(conn_id).set(connection)
+        try:
+            db.collection("connections").document(conn_id).set(connection)
+        except Exception:
+            _in_memory_store["connections"][conn_id] = connection
     else:
         _in_memory_store["connections"][conn_id] = connection
     return connection
@@ -207,13 +234,16 @@ def get_connections(user_id: str) -> list:
     db = _get_db()
     connections = []
     if db:
-        docs1 = db.collection("connections").where("user_id_1", "==", user_id).stream()
-        docs2 = db.collection("connections").where("user_id_2", "==", user_id).stream()
-        for doc in docs1:
-            connections.append(doc.to_dict())
-        for doc in docs2:
-            connections.append(doc.to_dict())
-    else:
+        try:
+            docs1 = db.collection("connections").where("user_id_1", "==", user_id).stream()
+            docs2 = db.collection("connections").where("user_id_2", "==", user_id).stream()
+            for doc in docs1:
+                connections.append(doc.to_dict())
+            for doc in docs2:
+                connections.append(doc.to_dict())
+        except Exception:
+            pass
+    if not connections:
         for conn in _in_memory_store["connections"].values():
             if conn.get("user_id_1") == user_id or conn.get("user_id_2") == user_id:
                 connections.append(conn)
