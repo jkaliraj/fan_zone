@@ -1,0 +1,172 @@
+{
+  "CSK": {
+    "code": "CSK",
+    "name": "Chennai Super Kings",
+    "home_ground": "M.A. Chidambaram Stadium, Chennai",
+    "captain": "Ruturaj Gaikwad",
+    "titles": 6,
+    "motto": "Whistle Podu!",
+    "colors": ["Yellow", "Blue"],
+    "key_players": ["Ruturaj Gaikwad", "Ravindra Jadeja", "MS Dhoni", "Devon Conway", "Deepak Chahar"],
+    "fan_base": "One of the most passionate fan bases in IPL, known for unwavering loyalty. The Yellow Army fills Chepauk every match.",
+    "rivalries": ["MI", "RCB"],
+    "fun_facts": [
+      "Only team to win IPL after returning from a 2-year ban",
+      "MS Dhoni has led CSK to 6 titles — the most by any captain",
+      "CSK has the highest win percentage in IPL history"
+    ]
+  },
+  "MI": {
+    "code": "MI",
+    "name": "Mumbai Indians",
+    "home_ground": "Wankhede Stadium, Mumbai",
+    "captain": "Hardik Pandya",
+    "titles": 5,
+    "motto": "Duniya Hila Denge!",
+    "colors": ["Blue", "Gold"],
+    "key_players": ["Rohit Sharma", "Jasprit Bumrah", "Suryakumar Yadav", "Ishan Kishan", "Tim David"],
+    "fan_base": "Massive fan base across India, known for their comeback victories. Paltan is everywhere.",
+    "rivalries": ["CSK", "RCB"],
+    "fun_facts": [
+      "Only team to win 5 IPL titles",
+      "Known for slow starts and explosive finishes in the tournament",
+      "Rohit Sharma is the only player to score 6000+ IPL runs"
+    ]
+  },
+  "RCB": {
+    "code": "RCB",
+    "name": "Royal Challengers Bangalore",
+    "home_ground": "M. Chinnaswamy Stadium, Bangalore",
+    "captain": "Virat Kohli",
+    "titles": 1,
+    "motto": "Ee Sala Cup Namde!",
+    "colors": ["Red", "Black", "Gold"],
+    "key_players": ["Virat Kohli", "Faf du Plessis", "Glenn Maxwell", "Mohammed Siraj", "Rajat Patidar"],
+    "fan_base": "Among the most vocal and emotional fan bases. RCB fans are known for never giving up on their team despite years of heartbreak.",
+    "rivalries": ["CSK", "MI"],
+    "fun_facts": [
+      "Virat Kohli has the most runs in IPL history — all for RCB",
+      "RCB holds the record for highest team total: 263/5",
+      "Finally won their maiden title in 2024 after 17 years"
+    ]
+  },
+  "KKR": {
+    "code": "KKR",
+    "name": "Kolkata Knight Riders",
+    "home_ground": "Eden Gardens, Kolkata",
+    "captain": "Shreyas Iyer",
+    "titles": 3,
+    "motto": "Korbo Lorbo Jeetbo!",
+    "colors": ["Purple", "Gold"],
+    "key_players": ["Shreyas Iyer", "Andre Russell", "Sunil Narine", "Rinku Singh", "Mitchell Starc"],
+    "fan_base": "Eden Gardens creates one of the most electric atmospheres in world cricket. KKR fans are theatrical and passionate.",
+    "rivalries": ["RCB", "MI"],
+    "fun_facts": [
+      "Shah Rukh Khan's ownership made KKR a global brand",
+      "Sunil Narine has bowled the most dot balls in IPL history",
+      "KKR won IPL 2024 in dominant fashion"
+    ]
+  },
+  "RR": {
+    "code": "RR",
+    "name": "Rajasthan Royals",
+    "home_ground": "Sawai Mansingh Stadium, Jaipur",
+    "captain": "Sanju Samson",
+    "titles": 1,
+    "motto": "Halla Bol!",
+    "colors": ["Pink", "Blue"],
+    "key_players": ["Sanju Samson", "Jos Buttler", "Yashasvi Jaiswal", "Yuzvendra Chahal", "Trent Boult"],
+    "fan_base": "The original IPL winners have a cult following, especially in Rajasthan. Known for their innovative approach.",
+    "rivalries": ["DC", "CSK"],
+    "fun_facts": [
+      "Won the inaugural IPL in 2008 as underdogs",
+      "Jos Buttler scored 4 centuries in IPL 2022",
+      "Known as the 'Moneyball' franchise of IPL"
+    ]
+  },
+  "DC": {
+    "code": "DC",
+    "name": "Delhi Capitals",
+    "home_ground": "Arun Jaitley Stadium, Delhi",
+    "captain": "Rishabh Pant",
+    "titles": 0,
+    "motto": "Roar Macha!",
+    "colors": ["Blue", "Red"],
+    "key_players": ["Rishabh Pant", "David Warner", "Anrich Nortje", "Axar Patel", "Kuldeep Yadav"],
+    "fan_base": "Growing fan base especially among younger fans. Delhi fans are passionate about their team's young talent.",
+    "rivalries": ["RR", "MI"],
+    "fun_facts": [
+      "Rebranded from Delhi Daredevils to Delhi Capitals in 2019",
+      "Reached their first IPL final in 2020",
+      "Rishabh Pant was the youngest IPL captain at 24"
+    ]
+  },
+  "GT": {
+    "code": "GT",
+    "name": "Gujarat Titans",
+    "home_ground": "Narendra Modi Stadium, Ahmedabad",
+    "captain": "Shubman Gill",
+    "titles": 1,
+    "motto": "Aava De!",
+    "colors": ["Navy Blue", "Gold"],
+    "key_players": ["Shubman Gill", "Rashid Khan", "Mohammed Shami", "David Miller", "Sai Sudharsan"],
+    "fan_base": "Newest franchise with a rapidly growing fan base. Playing at the world's largest cricket stadium gives them an incredible home advantage.",
+    "rivalries": ["RR", "CSK"],
+    "fun_facts": [
+      "Won the IPL title in their debut season (2022)",
+      "Play at the 132,000-capacity Narendra Modi Stadium",
+      "Hardik Pandya led them to the title in year one"
+    ]
+  },
+  "PBKS": {
+    "code": "PBKS",
+    "name": "Punjab Kings",
+    "home_ground": "PCA New Stadium, Mullanpur",
+    "captain": "Shreyas Iyer",
+    "titles": 0,
+    "motto": "Sadda Punjab!",
+    "colors": ["Red", "Silver"],
+    "key_players": ["Shreyas Iyer", "Kagiso Rabada", "Liam Livingstone", "Arshdeep Singh", "Jonny Bairstow"],
+    "fan_base": "Loyal and hopeful. Punjab fans are some of the most vocal supporters, always believing this could be their year.",
+    "rivalries": ["MI", "RR"],
+    "fun_facts": [
+      "Have never won the IPL despite being an original franchise",
+      "Consistently produce world-class pace bowlers",
+      "Known for the most dramatic chases in IPL history"
+    ]
+  },
+  "SRH": {
+    "code": "SRH",
+    "name": "Sunrisers Hyderabad",
+    "home_ground": "Rajiv Gandhi Intl Cricket Stadium, Hyderabad",
+    "captain": "Pat Cummins",
+    "titles": 1,
+    "motto": "Orange Army!",
+    "colors": ["Orange", "Black"],
+    "key_players": ["Pat Cummins", "Travis Head", "Heinrich Klaasen", "Abhishek Sharma", "Bhuvneshwar Kumar"],
+    "fan_base": "The Orange Army is one of the most organized fan groups. Hyderabad fans bring incredible energy to every home game.",
+    "rivalries": ["RCB", "MI"],
+    "fun_facts": [
+      "Won IPL 2016 in David Warner's captaincy era",
+      "Travis Head's explosive batting changed SRH's DNA in 2024",
+      "SRH scored 277/3 vs MI in 2024 — highest IPL total ever"
+    ]
+  },
+  "LSG": {
+    "code": "LSG",
+    "name": "Lucknow Super Giants",
+    "home_ground": "Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium, Lucknow",
+    "captain": "KL Rahul",
+    "titles": 0,
+    "motto": "Ab Lucknow Palat Dega!",
+    "colors": ["Light Blue", "Yellow"],
+    "key_players": ["KL Rahul", "Nicholas Pooran", "Marcus Stoinis", "Ravi Bishnoi", "Quinton de Kock"],
+    "fan_base": "New franchise building a loyal fan base in Uttar Pradesh. Known for their strategic approach and consistent performances.",
+    "rivalries": ["GT", "DC"],
+    "fun_facts": [
+      "Reached playoffs in their debut season (2022)",
+      "KL Rahul's calm captaincy defines the team's character",
+      "Lucknow fans have embraced cricket culture rapidly"
+    ]
+  }
+}
