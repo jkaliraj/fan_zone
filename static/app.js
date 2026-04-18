@@ -43,19 +43,20 @@ function switchSection(section) {
 
     // Hide all sections
     document.getElementById('heroSection').classList.toggle('hidden', section !== 'live');
-    ['Live', 'Matches', 'Discuss', 'Fans', 'Chat'].forEach(s => {
+    ['Live', 'Matches', 'Discuss', 'Fans', 'Agents', 'Chat'].forEach(s => {
         const el = document.getElementById(`section${s}`);
         if (el) el.classList.add('hidden');
     });
 
     // Show target
-    const map = { live: 'Live', matches: 'Matches', discuss: 'Discuss', fans: 'Fans', chat: 'Chat' };
+    const map = { live: 'Live', matches: 'Matches', discuss: 'Discuss', fans: 'Fans', agents: 'Agents', chat: 'Chat' };
     const target = document.getElementById(`section${map[section]}`);
     if (target) target.classList.remove('hidden');
 
     // Load data
     if (section === 'live') loadLiveScores();
     if (section === 'matches') loadRecentMatches();
+    if (section === 'agents') { /* agent chat loaded on demand */ }
 }
 
 // ── API Helper ───────────────────────────────────────────────
@@ -573,6 +574,51 @@ async function sendChat() {
         <div class="chat-msg bot">
             <div class="msg-avatar">🏏</div>
             <div class="msg-bubble">${formatAIResponse(data.response || 'Sorry, I couldn\'t process that.')}</div>
+        </div>
+    `;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// ── ADK Agent Chat ──────────────────────────────────────────
+async function sendAgentChat() {
+    const input = document.getElementById('agentInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const messagesDiv = document.getElementById('agentMessages');
+
+    // Add user message
+    messagesDiv.innerHTML += `
+        <div class="chat-msg user">
+            <div class="msg-avatar">${currentUser?.display_name?.[0] || 'U'}</div>
+            <div class="msg-bubble">${escHtml(message)}</div>
+        </div>
+    `;
+    input.value = '';
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    // Show typing indicator
+    const typingId = `agent-typing-${Date.now()}`;
+    messagesDiv.innerHTML += `
+        <div class="chat-msg bot" id="${typingId}">
+            <div class="msg-avatar">🧠</div>
+            <div class="msg-bubble" style="color: var(--text-muted);">Agents are working on your request...</div>
+        </div>
+    `;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    // Call ADK agent endpoint
+    const data = await apiFetch('/agent-chat', {
+        method: 'POST',
+        body: JSON.stringify({ message, user_id: currentUser?.user_id || 'anonymous' }),
+    });
+
+    // Remove typing, add response
+    document.getElementById(typingId)?.remove();
+    messagesDiv.innerHTML += `
+        <div class="chat-msg bot">
+            <div class="msg-avatar">🧠</div>
+            <div class="msg-bubble">${formatAIResponse(data.response || 'Agent could not process your request.')}</div>
         </div>
     `;
     messagesDiv.scrollTop = messagesDiv.scrollHeight;

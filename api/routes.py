@@ -31,6 +31,7 @@ from db.firestore import (
     get_connections,
 )
 from gemini_ai import ai_chat, ai_match_analysis, ai_fan_matchmaker, ai_discussion_starter
+from agent_runner import run_agent_chat
 
 router = APIRouter()
 
@@ -272,3 +273,19 @@ async def api_match_analysis(match_id: str):
         return {"match_id": match_id, "analysis": analysis}
     except Exception as e:
         return {"error": str(e)}
+
+
+# ── ADK Multi-Agent Chat ─────────────────────────────────────
+
+@router.post("/agent-chat")
+async def api_agent_chat(req: ChatRequest):
+    """Chat with the ADK multi-agent system (Commander → Match/Fan/Discussion/Connection).
+
+    This routes through the full ADK agent pipeline with FunctionTools that access
+    real CricAPI data, Firestore fan profiles, discussions, and connections.
+    """
+    try:
+        response = await run_agent_chat(req.user_id, req.message)
+        return {"response": response, "user_id": req.user_id, "engine": "adk-agents"}
+    except Exception as e:
+        return {"response": f"Agent system error: {str(e)}", "user_id": req.user_id, "engine": "adk-agents"}

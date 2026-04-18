@@ -751,6 +751,50 @@ select.input {
     grid-column: 1 / -1;
 }
 
+/* ── Agent UI ───────────────────────────────────────────── */
+.agent-info-bar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.agent-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.agent-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.agent-dot.commander { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.agent-dot.match { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.agent-dot.fan { background: var(--purple); box-shadow: 0 0 6px var(--purple); }
+.agent-dot.discuss { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.agent-dot.connect { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+
+.agent-chat-container {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.05);
+}
+
+.agent-chat-container .chat-msg.bot .msg-avatar {
+    background: linear-gradient(135deg, var(--accent-glow), rgba(167, 139, 250, 0.15));
+}
+
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 768px) {
     .navbar { padding: 0 1rem; }

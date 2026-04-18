@@ -22,6 +22,7 @@
             <a href="#" class="nav-link" data-section="matches">📋 Matches</a>
             <a href="#" class="nav-link" data-section="discuss">💬 Discuss</a>
             <a href="#" class="nav-link" data-section="fans">👥 Fans</a>
+            <a href="#" class="nav-link" data-section="agents">🧠 AI Agents</a>
             <a href="#" class="nav-link" data-section="chat">🤖 AI Chat</a>
         </div>
         <div class="nav-profile" id="navProfile">
@@ -158,6 +159,40 @@
                 <button class="btn btn-primary" onclick="loadConnections()">View</button>
             </div>
             <div id="connectionsList"></div>
+        </div>
+    </section>
+
+    <!-- ── AI AGENTS (ADK Multi-Agent System) ─────────────── -->
+    <section class="section hidden" id="sectionAgents">
+        <div class="section-header">
+            <h2>🧠 AI Agents</h2>
+            <span class="badge">ADK Multi-Agent • Gemini 2.5 Flash</span>
+        </div>
+        <div class="agent-info-bar">
+            <div class="agent-chip"><span class="agent-dot commander"></span>Commander</div>
+            <div class="agent-chip"><span class="agent-dot match"></span>Match Agent</div>
+            <div class="agent-chip"><span class="agent-dot fan"></span>Fan Agent</div>
+            <div class="agent-chip"><span class="agent-dot discuss"></span>Discussion Agent</div>
+            <div class="agent-chip"><span class="agent-dot connect"></span>Connection Agent</div>
+        </div>
+        <div class="chat-container agent-chat-container">
+            <div class="chat-messages" id="agentMessages">
+                <div class="chat-msg bot">
+                    <div class="msg-avatar">🧠</div>
+                    <div class="msg-bubble">
+                        Welcome to <strong>FanZone AI Agents!</strong> I'm powered by <strong>Google ADK</strong> with a multi-agent system:<br><br>
+                        🏏 <strong>Match Agent</strong> — Live scores, IPL, match details, player stats<br>
+                        👥 <strong>Fan Agent</strong> — Register, find fans, discover similar fans<br>
+                        💬 <strong>Discussion Agent</strong> — Start threads, reply, react to matches<br>
+                        🤝 <strong>Connection Agent</strong> — Connect with fans over shared moments<br><br>
+                        Try: <em>"Show me live scores"</em>, <em>"Find CSK fans"</em>, <em>"Tell me about Virat Kohli"</em>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="agentInput" placeholder="Ask agents about live scores, teams, fans, discussions..." class="input" onkeydown="if(event.key==='Enter')sendAgentChat()">
+                <button class="btn btn-primary" onclick="sendAgentChat()">Send</button>
+            </div>
         </div>
     </section>
 
