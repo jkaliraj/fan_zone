@@ -1,40 +1,47 @@
-"""FanZone AI — Firestore CRUD operations for fan profiles, discussions, and connections."""
+"""FanZone AI — Firestore CRUD operations for fan profiles, discussions, and connections.
+
+Uses Google Cloud Firestore as the primary persistent database.
+Falls back to in-memory storage ONLY for local development (when Firestore is not available).
+"""
 
 import os
 import uuid
 from datetime import datetime, timezone
 
-# In-memory fallback when Firestore is unavailable (local dev)
-_in_memory_store = {
+# In-memory fallback for local development only
+_local_store = {
     "fan_profiles": {},
     "discussions": {},
     "connections": {},
-    "reactions": {},
 }
 
 _firestore_client = None
 _firestore_checked = False
+_using_firestore = False
 
 
 def _get_db():
-    """Get Firestore client, or None if unavailable."""
-    global _firestore_client, _firestore_checked
+    """Get Firestore client. Returns None only if Firestore is truly unavailable (local dev)."""
+    global _firestore_client, _firestore_checked, _using_firestore
     if _firestore_checked:
         return _firestore_client
     _firestore_checked = True
     try:
         from google.cloud import firestore
         client = firestore.Client(
-            project=os.environ.get("GOOGLE_CLOUD_PROJECT", "fanzone-ai")
+            project=os.environ.get("GOOGLE_CLOUD_PROJECT", "build-with-ai-fan")
         )
-        # Quick connectivity check — if Firestore API/DB not provisioned, this fails fast
+        # Verify connectivity — will fail if API not enabled or DB not created
         list(client.collection("_health").limit(1).stream())
         _firestore_client = client
-        print("[Firestore] Connected successfully")
+        _using_firestore = True
+        print("[Firestore] Connected to Cloud Firestore (persistent storage)")
         return _firestore_client
     except Exception as e:
-        print(f"[Firestore] Not available, using in-memory storage: {e}")
+        print(f"[Firestore] Not available — using local in-memory storage: {e}")
+        print("[Firestore] To enable: gcloud firestore databases create --project=build-with-ai-fan --location=us-central1")
         _firestore_client = None
+        _using_firestore = False
         return None
 
 
@@ -60,12 +67,9 @@ def create_fan_profile(user_id: str, display_name: str, favorite_team: str,
     }
     db = _get_db()
     if db:
-        try:
-            db.collection("fan_profiles").document(user_id).set(profile)
-        except Exception:
-            _in_memory_store["fan_profiles"][user_id] = profile
+        db.collection("fan_profiles").document(user_id).set(profile)
     else:
-        _in_memory_store["fan_profiles"][user_id] = profile
+        _local_store["fan_profiles"][user_id] = profile
     return profile
 
 
@@ -73,15 +77,14 @@ def get_fan_profile(user_id: str) -> dict:
     """Retrieve a fan profile."""
     db = _get_db()
     if db:
-        try:
-            doc = db.collection("fan_profiles").document(user_id).get()
-            if doc.exists:
-                return doc.to_dict()
-        except Exception:
-            pass
-    if user_id in _in_memory_store["fan_profiles"]:
-        return _in_memory_store["fan_profiles"][user_id]
-    return {"error": f"Fan profile '{user_id}' not found."}
+        doc = db.collection("fan_profiles").document(user_id).get()
+        if doc.exists:
+            return doc.to_dict()
+        return {"error": f"Fan profile '{user_id}' not found."}
+    else:
+        if user_id in _local_store["fan_profiles"]:
+            return _local_store["fan_profiles"][user_id]
+        return {"error": f"Fan profile '{user_id}' not found."}
 
 
 def find_fans_by_team(team_code: str) -> list:
@@ -89,16 +92,13 @@ def find_fans_by_team(team_code: str) -> list:
     db = _get_db()
     fans = []
     if db:
-        try:
-            docs = db.collection("fan_profiles").where(
-                "teams_following", "array_contains", team_code
-            ).stream()
-            for doc in docs:
-                fans.append(doc.to_dict())
-        except Exception:
-            pass
-    if not fans:
-        for profile in _in_memory_store["fan_profiles"].values():
+        docs = db.collection("fan_profiles").where(
+            "teams_following", "array_contains", team_code
+        ).stream()
+        for doc in docs:
+            fans.append(doc.to_dict())
+    else:
+        for profile in _local_store["fan_profiles"].values():
             if team_code in profile.get("teams_following", []):
                 fans.append(profile)
     return fans
@@ -133,12 +133,9 @@ def create_discussion(match_id: str, user_id: str, title: str,
     }
     db = _get_db()
     if db:
-        try:
-            db.collection("discussions").document(disc_id).set(discussion)
-        except Exception:
-            _in_memory_store["discussions"][disc_id] = discussion
+        db.collection("discussions").document(disc_id).set(discussion)
     else:
-        _in_memory_store["discussions"][disc_id] = discussion
+        _local_store["discussions"][disc_id] = discussion
     return discussion
 
 
@@ -147,16 +144,13 @@ def get_discussions_for_match(match_id: str) -> list:
     db = _get_db()
     discussions = []
     if db:
-        try:
-            docs = db.collection("discussions").where(
-                "match_id", "==", match_id
-            ).stream()
-            for doc in docs:
-                discussions.append(doc.to_dict())
-        except Exception:
-            pass
-    if not discussions:
-        for disc in _in_memory_store["discussions"].values():
+        docs = db.collection("discussions").where(
+            "match_id", "==", match_id
+        ).stream()
+        for doc in docs:
+            discussions.append(doc.to_dict())
+    else:
+        for disc in _local_store["discussions"].values():
             if disc.get("match_id") == match_id:
                 discussions.append(disc)
     return discussions
@@ -172,17 +166,12 @@ def add_reply(discussion_id: str, user_id: str, content: str) -> dict:
     }
     db = _get_db()
     if db:
-        try:
-            from google.cloud.firestore_v1 import ArrayUnion
-            db.collection("discussions").document(discussion_id).update({
-                "replies": ArrayUnion([reply])
-            })
-        except Exception:
-            disc = _in_memory_store["discussions"].get(discussion_id)
-            if disc:
-                disc["replies"].append(reply)
+        from google.cloud.firestore_v1 import ArrayUnion
+        db.collection("discussions").document(discussion_id).update({
+            "replies": ArrayUnion([reply])
+        })
     else:
-        disc = _in_memory_store["discussions"].get(discussion_id)
+        disc = _local_store["discussions"].get(discussion_id)
         if disc:
             disc["replies"].append(reply)
     return reply
@@ -195,17 +184,12 @@ def add_reaction(discussion_id: str, emoji: str) -> dict:
         return {"error": f"Invalid reaction. Use one of: {valid_emojis}"}
     db = _get_db()
     if db:
-        try:
-            from google.cloud.firestore_v1 import Increment
-            db.collection("discussions").document(discussion_id).update({
-                f"reactions.{emoji}": Increment(1)
-            })
-        except Exception:
-            disc = _in_memory_store["discussions"].get(discussion_id)
-            if disc:
-                disc["reactions"][emoji] = disc["reactions"].get(emoji, 0) + 1
+        from google.cloud.firestore_v1 import Increment
+        db.collection("discussions").document(discussion_id).update({
+            f"reactions.{emoji}": Increment(1)
+        })
     else:
-        disc = _in_memory_store["discussions"].get(discussion_id)
+        disc = _local_store["discussions"].get(discussion_id)
         if disc:
             disc["reactions"][emoji] = disc["reactions"].get(emoji, 0) + 1
     return {"discussion_id": discussion_id, "reaction": emoji, "status": "added"}
@@ -228,12 +212,9 @@ def create_connection(user_id_1: str, user_id_2: str, match_id: str,
     }
     db = _get_db()
     if db:
-        try:
-            db.collection("connections").document(conn_id).set(connection)
-        except Exception:
-            _in_memory_store["connections"][conn_id] = connection
+        db.collection("connections").document(conn_id).set(connection)
     else:
-        _in_memory_store["connections"][conn_id] = connection
+        _local_store["connections"][conn_id] = connection
     return connection
 
 
@@ -242,17 +223,14 @@ def get_connections(user_id: str) -> list:
     db = _get_db()
     connections = []
     if db:
-        try:
-            docs1 = db.collection("connections").where("user_id_1", "==", user_id).stream()
-            docs2 = db.collection("connections").where("user_id_2", "==", user_id).stream()
-            for doc in docs1:
-                connections.append(doc.to_dict())
-            for doc in docs2:
-                connections.append(doc.to_dict())
-        except Exception:
-            pass
-    if not connections:
-        for conn in _in_memory_store["connections"].values():
+        docs1 = db.collection("connections").where("user_id_1", "==", user_id).stream()
+        docs2 = db.collection("connections").where("user_id_2", "==", user_id).stream()
+        for doc in docs1:
+            connections.append(doc.to_dict())
+        for doc in docs2:
+            connections.append(doc.to_dict())
+    else:
+        for conn in _local_store["connections"].values():
             if conn.get("user_id_1") == user_id or conn.get("user_id_2") == user_id:
                 connections.append(conn)
     return connections
