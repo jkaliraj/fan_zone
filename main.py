@@ -1,77 +1,50 @@
-"""FanZone AI — Main Entry Point
+"""FanZone AI — Cricket Fan Connection Platform
 
-Serves BOTH:
-  - ADK Web UI at / (interactive chat with agent graph)
-  - REST API at /api/* (programmatic access)
-
-Deployment: Cloud Run via `uvicorn main:app`
+FastAPI backend with:
+  - Real-time cricket data from CricAPI
+  - Gemini 2.5 Flash AI for smart features
+  - Firestore for fan data
+  - Static file serving for frontend UI
 """
 
 import os
 from pathlib import Path
 
-# Load .env file if present (local dev)
-_env_file = Path(__file__).parent / ".env"
-if _env_file.exists():
-    for line in _env_file.read_text().splitlines():
+# Load .env
+_env = Path(__file__).parent / ".env"
+if _env.exists():
+    for line in _env.read_text().splitlines():
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
-            key, _, value = line.partition("=")
-            os.environ.setdefault(key.strip(), value.strip())
+            k, _, v = line.partition("=")
+            os.environ.setdefault(k.strip(), v.strip())
 
-# Use API key if set, otherwise fall back to Vertex AI (ADC auth)
-if not os.environ.get("GOOGLE_API_KEY"):
-    os.environ.setdefault("GOOGLE_GENAI_USE_VERTEXAI", "TRUE")
-    os.environ.setdefault("GOOGLE_CLOUD_LOCATION", "us-central1")
-
-from google.adk.cli.fast_api import get_fast_api_app
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from api.routes import router
 
-# Create the ADK web app (serves UI + agent chat endpoints)
-app = get_fast_api_app(
-    agents_dir=".",
-    web=True,
-    host="0.0.0.0",
-    port=8080,
+app = FastAPI(title="FanZone AI", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
     allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Mount our custom REST API under /api
 app.include_router(router, prefix="/api")
+
+static_dir = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+
+@app.get("/")
+async def serve_index():
+    return FileResponse(str(static_dir / "index.html"))
 
 
 @app.get("/health")
 async def health():
     return {"status": "healthy", "service": "fanzone-ai"}
-
-
-@app.get("/api")
-async def api_root():
-    return {
-        "name": "FanZone AI",
-        "version": "1.0.0",
-        "tagline": "Where cricket fans connect through shared match experiences",
-        "docs": "Visit / for ADK Web UI, /api/* for REST endpoints",
-        "data_source": "CricAPI (CricketData.org) — Real-time cricket data",
-        "endpoints": [
-            "GET  /health",
-            "GET  /api/live-matches",
-            "GET  /api/live-scores",
-            "GET  /api/match/{match_id}",
-            "GET  /api/recent-matches",
-            "GET  /api/ipl-matches",
-            "GET  /api/series/search?q=IPL",
-            "GET  /api/team/{team_code}",
-            "GET  /api/player/search?q=Virat",
-            "POST /api/fan/register",
-            "GET  /api/fan/{user_id}",
-            "GET  /api/fan/team/{team_code}",
-            "POST /api/discussion/create",
-            "GET  /api/discussion/match/{match_id}",
-            "POST /api/discussion/{disc_id}/reply",
-            "POST /api/discussion/{disc_id}/react",
-            "POST /api/connection/create",
-            "GET  /api/connection/{user_id}",
-            "POST /api/chat",
-        ],
-    }

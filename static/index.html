@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FanZone AI — Where Every Match Creates a Connection</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏏</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+    <!-- ── NAVBAR ─────────────────────────────────────────── -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="brand-icon">🏏</span>
+            <span class="brand-text">FanZone <span class="brand-ai">AI</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-section="live">🔴 Live</a>
+            <a href="#" class="nav-link" data-section="matches">📋 Matches</a>
+            <a href="#" class="nav-link" data-section="discuss">💬 Discuss</a>
+            <a href="#" class="nav-link" data-section="fans">👥 Fans</a>
+            <a href="#" class="nav-link" data-section="chat">🤖 AI Chat</a>
+        </div>
+        <div class="nav-profile" id="navProfile">
+            <button class="btn btn-sm btn-accent" id="btnRegister" onclick="switchSection('fans')">Join FanZone</button>
+        </div>
+    </nav>
+
+    <!-- ── HERO ───────────────────────────────────────────── -->
+    <section class="hero" id="heroSection">
+        <div class="hero-content">
+            <h1>Where Every Match Creates a <span class="text-accent">Connection</span></h1>
+            <p class="hero-sub">Real-time scores &bull; Fan discussions &bull; AI-powered connections &mdash; all centered around live cricket</p>
+            <div class="hero-actions">
+                <button class="btn btn-primary btn-lg" onclick="switchSection('live')">🔴 View Live Scores</button>
+                <button class="btn btn-outline btn-lg" onclick="switchSection('fans')">👥 Find Your Tribe</button>
+            </div>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-card">
+                <span class="stat-num" id="statLive">&mdash;</span>
+                <span class="stat-label">Live Matches</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num" id="statFans">&mdash;</span>
+                <span class="stat-label">Fans Online</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num" id="statDiscussions">&mdash;</span>
+                <span class="stat-label">Discussions</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── LIVE SCORES ────────────────────────────────────── -->
+    <section class="section hidden" id="sectionLive">
+        <div class="section-header">
+            <h2>🔴 Live Cricket Scores</h2>
+            <button class="btn btn-sm btn-outline" onclick="loadLiveScores()">↻ Refresh</button>
+        </div>
+        <div class="card-grid" id="liveScoresGrid">
+            <div class="loading-spinner">Fetching live scores...</div>
+        </div>
+    </section>
+
+    <!-- ── MATCHES ────────────────────────────────────────── -->
+    <section class="section hidden" id="sectionMatches">
+        <div class="section-header">
+            <h2>📋 Matches</h2>
+            <div class="tab-bar">
+                <button class="tab active" data-tab="recent" onclick="loadRecentMatches()">Recent</button>
+                <button class="tab" data-tab="ipl" onclick="loadIPLMatches()">IPL</button>
+            </div>
+        </div>
+        <div class="card-grid" id="matchesGrid">
+            <div class="loading-spinner">Loading...</div>
+        </div>
+    </section>
+
+    <!-- ── DISCUSSIONS ────────────────────────────────────── -->
+    <section class="section hidden" id="sectionDiscuss">
+        <div class="section-header">
+            <h2>💬 Match Discussions</h2>
+            <button class="btn btn-sm btn-primary" id="btnNewDiscussion" onclick="toggleNewDiscussion()">+ New Thread</button>
+        </div>
+        <div class="card form-card hidden" id="newDiscussionForm">
+            <h3>Start a Discussion</h3>
+            <input type="text" id="discMatchId" placeholder="Match ID (copy from live scores)" class="input">
+            <input type="text" id="discTitle" placeholder="Discussion title" class="input">
+            <textarea id="discContent" placeholder="Share your thoughts..." class="input textarea"></textarea>
+            <input type="text" id="discTags" placeholder="Tags (comma separated)" class="input">
+            <div class="form-actions">
+                <button class="btn btn-primary" onclick="createDiscussion()">Post</button>
+                <button class="btn btn-outline" onclick="toggleNewDiscussion()">Cancel</button>
+            </div>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="discSearchMatch" placeholder="Enter Match ID to see discussions" class="input">
+            <button class="btn btn-primary" onclick="loadDiscussions()">Search</button>
+        </div>
+        <div id="discussionsList">
+            <div class="empty-state">Enter a match ID to see fan discussions</div>
+        </div>
+    </section>
+
+    <!-- ── FAN ZONE ───────────────────────────────────────── -->
+    <section class="section hidden" id="sectionFans">
+        <div class="section-header">
+            <h2>👥 Fan Zone</h2>
+        </div>
+        <div class="fan-grid">
+            <div class="card fan-register-card" id="fanRegisterCard">
+                <h3>🏏 Join FanZone</h3>
+                <p>Register with your team loyalty to connect with fellow fans</p>
+                <input type="text" id="fanUserId" placeholder="Choose a username" class="input">
+                <input type="text" id="fanDisplayName" placeholder="Display name" class="input">
+                <select id="fanTeam" class="input">
+                    <option value="">Select your team</option>
+                    <option value="CSK">🟡 Chennai Super Kings</option>
+                    <option value="MI">🔵 Mumbai Indians</option>
+                    <option value="RCB">🔴 Royal Challengers Bangalore</option>
+                    <option value="KKR">🟣 Kolkata Knight Riders</option>
+                    <option value="RR">🩷 Rajasthan Royals</option>
+                    <option value="DC">🔷 Delhi Capitals</option>
+                    <option value="GT">⬛ Gujarat Titans</option>
+                    <option value="PBKS">🔴 Punjab Kings</option>
+                    <option value="SRH">🟠 Sunrisers Hyderabad</option>
+                    <option value="LSG">🩵 Lucknow Super Giants</option>
+                </select>
+                <input type="text" id="fanLocation" placeholder="Your city" class="input">
+                <textarea id="fanBio" placeholder="Your cricket bio..." class="input textarea"></textarea>
+                <button class="btn btn-primary btn-block" onclick="registerFan()">Register &amp; Join</button>
+            </div>
+            <div class="card team-explorer-card">
+                <h3>🔍 Explore Teams</h3>
+                <div class="team-buttons" id="teamButtons">
+                    <button class="team-btn" style="--team-color:#FFCB05" onclick="loadTeamInfo('CSK')">CSK</button>
+                    <button class="team-btn" style="--team-color:#004BA0" onclick="loadTeamInfo('MI')">MI</button>
+                    <button class="team-btn" style="--team-color:#D4213D" onclick="loadTeamInfo('RCB')">RCB</button>
+                    <button class="team-btn" style="--team-color:#3A225D" onclick="loadTeamInfo('KKR')">KKR</button>
+                    <button class="team-btn" style="--team-color:#EA1A85" onclick="loadTeamInfo('RR')">RR</button>
+                    <button class="team-btn" style="--team-color:#0078BC" onclick="loadTeamInfo('DC')">DC</button>
+                    <button class="team-btn" style="--team-color:#1C1C2B" onclick="loadTeamInfo('GT')">GT</button>
+                    <button class="team-btn" style="--team-color:#DD1F2D" onclick="loadTeamInfo('PBKS')">PBKS</button>
+                    <button class="team-btn" style="--team-color:#FF822A" onclick="loadTeamInfo('SRH')">SRH</button>
+                    <button class="team-btn" style="--team-color:#59B3E6" onclick="loadTeamInfo('LSG')">LSG</button>
+                </div>
+                <div id="teamInfoPanel"></div>
+            </div>
+        </div>
+        <div class="card" style="margin-top:1rem;">
+            <h3>🤝 My Connections</h3>
+            <div class="search-bar">
+                <input type="text" id="connUserId" placeholder="Your username" class="input">
+                <button class="btn btn-primary" onclick="loadConnections()">View</button>
+            </div>
+            <div id="connectionsList"></div>
+        </div>
+    </section>
+
+    <!-- ── AI CHAT ────────────────────────────────────────── -->
+    <section class="section hidden" id="sectionChat">
+        <div class="section-header">
+            <h2>🤖 FanZone AI</h2>
+            <span class="badge">Powered by Gemini 2.5 Flash</span>
+        </div>
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-msg bot">
+                    <div class="msg-avatar">🏏</div>
+                    <div class="msg-bubble">
+                        Welcome to FanZone AI! I'm powered by <strong>Gemini 2.5 Flash</strong>. Ask me anything about cricket:<br><br>
+                        &bull; &ldquo;What are the live scores?&rdquo;<br>
+                        &bull; &ldquo;Tell me about CSK&rdquo;<br>
+                        &bull; &ldquo;Analyze today's IPL match&rdquo;<br>
+                        &bull; &ldquo;Who is Virat Kohli?&rdquo;
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ask about matches, teams, players..." class="input" onkeydown="if(event.key==='Enter')sendChat()">
+                <button class="btn btn-primary" onclick="sendChat()">Send</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── MATCH DETAIL MODAL ─────────────────────────────── -->
+    <div class="modal hidden" id="matchModal">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="matchModalBody"></div>
+        </div>
+    </div>
+
+    <!-- ── TOASTS ─────────────────────────────────────────── -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
