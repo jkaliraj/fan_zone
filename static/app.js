@@ -154,7 +154,7 @@ function renderScoreCard(s) {
     return `
         <div class="match-card" onclick="viewMatchDetail('${matchId}')">
             ${isLive ? '<div class="live-badge"><span class="pulse"></span>LIVE</div>' : ''}
-            <div class="match-type">${s.matchType || 't20'} • ${s.series || ''}</div>
+            ${s.series ? `<div class="match-type">${escHtml(s.series)}</div>` : ''}
             <div class="match-teams">${escHtml(t1)} vs ${escHtml(t2)}</div>
             <div class="match-score">
                 ${t1s ? `${escHtml(t1)}: <strong>${escHtml(t1s)}</strong>` : ''}
@@ -213,7 +213,7 @@ function renderMatchCard(m) {
     return `
         <div class="match-card" onclick="viewMatchDetail('${matchId}')">
             ${isLive ? '<div class="live-badge"><span class="pulse"></span>LIVE</div>' : ''}
-            <div class="match-type">${m.matchType || ''} • ${m.date || ''}</div>
+            ${m.date ? `<div class="match-type">${escHtml(m.date)}</div>` : ''}
             <div class="match-teams">${escHtml(name)}</div>
             <span class="match-status ${statusClass}">${escHtml(status)}</span>
             ${m.venue ? `<div class="match-venue">📍 ${escHtml(m.venue)}</div>` : ''}
@@ -333,6 +333,7 @@ let discussMatches = []; // cached matches for the discuss page
 let selectedDiscussMatchId = null;
 
 async function loadDiscussPage() {
+    document.getElementById('discussionsList').innerHTML = '<div class="empty-state"><div class="loading-spinner"></div> Loading matches...</div>';
     const data = await apiFetch('/live-scores');
     const scores = data.scores || [];
     discussMatches = scores;
@@ -364,6 +365,8 @@ async function loadDiscussPage() {
     // Restore selection if exists
     if (selectedDiscussMatchId) {
         loadDiscussions(selectedDiscussMatchId);
+    } else {
+        document.getElementById('discussionsList').innerHTML = '<div class="empty-state">Click on a match above to see fan discussions</div>';
     }
 }
 
