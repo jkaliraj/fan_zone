@@ -324,8 +324,10 @@ const TEAM_ABBR = {
     'south africa women': 'SA-W', 'australia women': 'AUS-W', 'england women': 'ENG-W',
 };
 function teamAbbr(name) {
-    const key = (name || '').toLowerCase().trim();
-    return TEAM_ABBR[key] || name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 3);
+    // Strip anything in brackets like [DC] and trim
+    const clean = (name || '').replace(/\[.*?\]/g, '').trim();
+    const key = clean.toLowerCase();
+    return TEAM_ABBR[key] || clean.split(' ').filter(w => w).map(w => w[0]).join('').toUpperCase().slice(0, 3);
 }
 let discussMatches = []; // cached matches for the discuss page
 let selectedDiscussMatchId = null;
