@@ -8,6 +8,20 @@ const API = '/api';
 // ── State ────────────────────────────────────────────────────
 let currentUser = null;
 let currentSection = 'live';
+let fansCounterInterval = null;
+let currentFansCount = 0;
+
+// ── Fake Fans Online Counter ─────────────────────────────────
+function startFansOnlineCounter() {
+    if (fansCounterInterval) return; // already running
+    currentFansCount = Math.floor(Math.random() * 300) + 1200; // start 1200-1500
+    document.getElementById('statFans').textContent = currentFansCount.toLocaleString();
+    fansCounterInterval = setInterval(() => {
+        const delta = Math.floor(Math.random() * 15) - 6; // -6 to +8 (slight upward bias)
+        currentFansCount = Math.max(800, currentFansCount + delta);
+        document.getElementById('statFans').textContent = currentFansCount.toLocaleString();
+    }, 3000 + Math.random() * 2000); // every 3-5 seconds
+}
 
 // ── Theme ────────────────────────────────────────────────────
 function toggleTheme() {
@@ -129,6 +143,8 @@ async function loadLiveScores() {
     // Update hero stats
     const live = scores.filter(s => s.ms === 'live' || (s.matchStarted && !s.matchEnded));
     document.getElementById('statLive').textContent = live.length || scores.length;
+    document.getElementById('statDiscussions').textContent = '10';
+    startFansOnlineCounter();
 
     if (scores.length === 0) {
         grid.innerHTML = '<div class="empty-state">No live Indian cricket scores right now. Check back during IPL or India match time!</div>';
@@ -644,8 +660,18 @@ function loadFansPage() {
 function switchAuthTab(tab) {
     document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
     document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-    document.getElementById('authLoginForm').classList.toggle('hidden', tab !== 'login');
-    document.getElementById('authRegisterForm').classList.toggle('hidden', tab !== 'register');
+
+    const loginForm = document.getElementById('authLoginForm');
+    const registerForm = document.getElementById('authRegisterForm');
+    const showForm = tab === 'login' ? loginForm : registerForm;
+    const hideForm = tab === 'login' ? registerForm : loginForm;
+
+    hideForm.classList.add('hidden');
+    showForm.classList.remove('hidden');
+    // Re-trigger animation
+    showForm.style.animation = 'none';
+    showForm.offsetHeight; // force reflow
+    showForm.style.animation = '';
 }
 
 async function loginFan() {
@@ -746,13 +772,25 @@ function updateNavProfile() {
 
 // ── Team Info ────────────────────────────────────────────────
 async function loadTeamInfo(teamCode) {
-    // Highlight selected team button
-    document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('team-btn-active'));
-    const activeBtn = document.querySelector(`.team-btn[data-team="${teamCode}"]`);
-    if (activeBtn) activeBtn.classList.add('team-btn-active');
+    // Highlight selected team chip
+    const allChips = document.querySelectorAll('.team-chip');
+    for (let i = 0; i < allChips.length; i++) {
+        allChips[i].classList.remove('team-chip-active');
+    }
+    const allBtns = document.querySelectorAll('.team-card-btn, .team-btn');
+    for (let i = 0; i < allBtns.length; i++) {
+        allBtns[i].classList.remove('team-card-btn-active', 'team-btn-active');
+    }
+    const activeBtn = document.querySelector('[data-team="' + teamCode + '"]');
+    if (activeBtn) {
+        activeBtn.classList.add('team-chip-active');
+    }
 
     const panel = document.getElementById('teamInfoPanel');
-    panel.innerHTML = '<div class="loading-spinner">Loading...</div>';
+    // Only show loading if panel is empty (avoids flicker on team switch)
+    if (!panel.innerHTML.trim() || panel.querySelector('.empty-state')) {
+        panel.innerHTML = '<div class="loading-spinner">Loading...</div>';
+    }
 
     const data = await apiFetch(`/team/${teamCode}`);
 

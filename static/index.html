@@ -55,7 +55,7 @@
             </div>
             <div class="stat-card">
                 <span class="stat-num" id="statDiscussions">&mdash;</span>
-                <span class="stat-label">Discussions</span>
+                <span class="stat-label">IPL Teams</span>
             </div>
         </div>
     </section>
@@ -136,64 +136,109 @@
             <p class="profile-bio" id="profileBio"></p>
         </div>
 
-        <div class="fan-grid">
+        <div class="fan-layout">
             <!-- Auth Card (hidden when logged in) -->
-            <div class="card fan-register-card" id="fanRegisterCard">
+            <div class="fan-register-card" id="fanRegisterCard">
+                <div class="auth-header">
+                    <div class="auth-header-row">
+                        <div class="auth-icon">🏏</div>
+                        <div>
+                            <h3>Join the FanZone</h3>
+                            <p class="auth-subtitle">Connect with millions of Indian cricket fans</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="auth-tabs">
-                    <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</button>
-                    <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Register</button>
+                    <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign In</button>
+                    <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Create Account</button>
                 </div>
                 <!-- Login Form -->
                 <div id="authLoginForm">
-                    <p class="auth-desc">Welcome back! Sign in to continue.</p>
-                    <input type="text" id="loginUserId" placeholder="Username" class="input">
-                    <input type="password" id="loginPassword" placeholder="Password" class="input">
-                    <button class="btn btn-primary btn-block" onclick="loginFan()">Sign In</button>
+                    <div class="input-group">
+                        <label class="input-label">Username</label>
+                        <input type="text" id="loginUserId" placeholder="Enter your username" class="input">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" class="input">
+                    </div>
+                    <button class="btn btn-primary btn-block btn-auth" onclick="loginFan()">Sign In</button>
                 </div>
                 <!-- Register Form -->
                 <div id="authRegisterForm" class="hidden">
-                    <p class="auth-desc">Create your fan profile to connect.</p>
-                    <input type="text" id="fanUserId" placeholder="Choose a username" class="input">
-                    <input type="text" id="fanDisplayName" placeholder="Display name" class="input">
-                    <input type="password" id="fanPassword" placeholder="Create a password" class="input">
-                    <select id="fanTeam" class="input">
-                        <option value="">Select your team</option>
-                        <option value="CSK">Chennai Super Kings</option>
-                        <option value="MI">Mumbai Indians</option>
-                        <option value="RCB">Royal Challengers Bangalore</option>
-                        <option value="KKR">Kolkata Knight Riders</option>
-                        <option value="RR">Rajasthan Royals</option>
-                        <option value="DC">Delhi Capitals</option>
-                        <option value="GT">Gujarat Titans</option>
-                        <option value="PBKS">Punjab Kings</option>
-                        <option value="SRH">Sunrisers Hyderabad</option>
-                        <option value="LSG">Lucknow Super Giants</option>
-                    </select>
-                    <input type="text" id="fanLocation" placeholder="Your city" class="input">
-                    <textarea id="fanBio" placeholder="Tell us about your cricket fandom..." class="input textarea"></textarea>
-                    <button class="btn btn-primary btn-block" onclick="registerFan()">Create Account</button>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label class="input-label">Username</label>
+                            <input type="text" id="fanUserId" placeholder="Pick a username" class="input">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Display Name</label>
+                            <input type="text" id="fanDisplayName" placeholder="Your name" class="input">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Password</label>
+                        <input type="password" id="fanPassword" placeholder="Min 4 characters" class="input">
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label class="input-label">Favorite Team</label>
+                            <select id="fanTeam" class="input">
+                                <option value="">Select team</option>
+                                <option value="CSK">Chennai Super Kings</option>
+                                <option value="MI">Mumbai Indians</option>
+                                <option value="RCB">Royal Challengers Bangalore</option>
+                                <option value="KKR">Kolkata Knight Riders</option>
+                                <option value="RR">Rajasthan Royals</option>
+                                <option value="DC">Delhi Capitals</option>
+                                <option value="GT">Gujarat Titans</option>
+                                <option value="PBKS">Punjab Kings</option>
+                                <option value="SRH">Sunrisers Hyderabad</option>
+                                <option value="LSG">Lucknow Super Giants</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">City</label>
+                            <input type="text" id="fanLocation" placeholder="Your city" class="input">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Bio <span style="color:var(--text-muted);font-weight:400">(optional)</span></label>
+                        <textarea id="fanBio" placeholder="Tell us about your cricket fandom..." class="input textarea"></textarea>
+                    </div>
+                    <button class="btn btn-primary btn-block btn-auth" onclick="registerFan()">Create Account</button>
                 </div>
             </div>
-        </div>
 
-        <!-- Explore Teams (full width below) -->
-        <div class="card team-explorer-card" style="margin-top:1rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
-                <h3 style="margin:0;">🔍 Explore Teams</h3>
-                <div class="team-buttons" id="teamButtons">
-                    <button class="team-btn team-btn-active" data-team="CSK" style="--team-color:#FFCB05" onclick="loadTeamInfo('CSK')">CSK</button>
-                    <button class="team-btn" data-team="MI" style="--team-color:#004BA0" onclick="loadTeamInfo('MI')">MI</button>
-                    <button class="team-btn" data-team="RCB" style="--team-color:#D4213D" onclick="loadTeamInfo('RCB')">RCB</button>
-                    <button class="team-btn" data-team="KKR" style="--team-color:#3A225D" onclick="loadTeamInfo('KKR')">KKR</button>
-                    <button class="team-btn" data-team="RR" style="--team-color:#EA1A85" onclick="loadTeamInfo('RR')">RR</button>
-                    <button class="team-btn" data-team="DC" style="--team-color:#0078BC" onclick="loadTeamInfo('DC')">DC</button>
-                    <button class="team-btn" data-team="GT" style="--team-color:#1C1C2B" onclick="loadTeamInfo('GT')">GT</button>
-                    <button class="team-btn" data-team="PBKS" style="--team-color:#DD1F2D" onclick="loadTeamInfo('PBKS')">PBKS</button>
-                    <button class="team-btn" data-team="SRH" style="--team-color:#FF822A" onclick="loadTeamInfo('SRH')">SRH</button>
-                    <button class="team-btn" data-team="LSG" style="--team-color:#59B3E6" onclick="loadTeamInfo('LSG')">LSG</button>
+            <!-- Explore Teams -->
+            <div class="team-explorer-section">
+                <div class="team-explorer-header">
+                    <h3>🔍 Explore IPL Teams</h3>
+                    <p>Select a team to learn more</p>
                 </div>
+                <div class="team-chips" id="teamButtons">
+                    <button class="team-chip team-chip-active" data-team="CSK" style="--team-color:#FFCB05" onclick="loadTeamInfo('CSK')">CSK</button>
+                    <button class="team-chip" data-team="MI" style="--team-color:#004BA0" onclick="loadTeamInfo('MI')">MI</button>
+                    <button class="team-chip" data-team="RCB" style="--team-color:#D4213D" onclick="loadTeamInfo('RCB')">RCB</button>
+                    <button class="team-chip" data-team="KKR" style="--team-color:#7B5EA7" onclick="loadTeamInfo('KKR')">KKR</button>
+                    <button class="team-chip" data-team="RR" style="--team-color:#EA1A85" onclick="loadTeamInfo('RR')">RR</button>
+                    <button class="team-chip" data-team="DC" style="--team-color:#0078BC" onclick="loadTeamInfo('DC')">DC</button>
+                    <button class="team-chip" data-team="GT" style="--team-color:#5A7FCC" onclick="loadTeamInfo('GT')">GT</button>
+                    <button class="team-chip" data-team="PBKS" style="--team-color:#DD1F2D" onclick="loadTeamInfo('PBKS')">PBKS</button>
+                    <button class="team-chip" data-team="SRH" style="--team-color:#FF822A" onclick="loadTeamInfo('SRH')">SRH</button>
+                    <button class="team-chip" data-team="LSG" style="--team-color:#59B3E6" onclick="loadTeamInfo('LSG')">LSG</button>
+                </div>
+                <script>
+                document.getElementById('teamButtons').addEventListener('click', function(e) {
+                    var chip = e.target.closest('.team-chip');
+                    if (!chip) return;
+                    var all = this.querySelectorAll('.team-chip');
+                    for (var i = 0; i < all.length; i++) all[i].classList.remove('team-chip-active');
+                    chip.classList.add('team-chip-active');
+                });
+                </script>
+                <div id="teamInfoPanel" class="team-info-panel"></div>
             </div>
-            <div id="teamInfoPanel" class="team-info-panel"></div>
         </div>
         <div class="card hidden" style="margin-top:1rem;" id="connectionsCard">
             <h3>🤝 My Connections</h3>
