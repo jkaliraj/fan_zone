@@ -280,6 +280,25 @@
     <!-- ── TOASTS ─────────────────────────────────────────── -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- ── MOBILE BOTTOM NAV ──────────────────────────────── -->
+    <nav class="mobile-nav" id="mobileNav">
+        <a href="#" class="nav-link active" data-section="live" onclick="switchSection('live'); return false;">
+            <span class="nav-emoji">🔴</span>Live
+        </a>
+        <a href="#" class="nav-link" data-section="matches" onclick="switchSection('matches'); return false;">
+            <span class="nav-emoji">📋</span>Matches
+        </a>
+        <a href="#" class="nav-link" data-section="discuss" onclick="switchSection('discuss'); return false;">
+            <span class="nav-emoji">💬</span>Discuss
+        </a>
+        <a href="#" class="nav-link" data-section="fans" onclick="switchSection('fans'); return false;">
+            <span class="nav-emoji">👥</span>Fans
+        </a>
+        <a href="#" class="nav-link" data-section="ai" onclick="switchSection('ai'); return false;">
+            <span class="nav-emoji">✨</span>AI
+        </a>
+    </nav>
+
     <script src="/static/app.js"></script>
 </body>
 </html>

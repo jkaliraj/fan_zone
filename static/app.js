@@ -70,9 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
 function switchSection(section) {
     currentSection = section;
 
-    // Update nav
+    // Update nav (both desktop and mobile)
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    document.querySelector(`.nav-link[data-section="${section}"]`)?.classList.add('active');
+    document.querySelectorAll(`.nav-link[data-section="${section}"]`).forEach(l => l.classList.add('active'));
 
     // Fade out all visible sections first
     const allSections = ['heroSection', 'sectionLive', 'sectionMatches', 'sectionDiscuss', 'sectionFans', 'sectionAi'];
