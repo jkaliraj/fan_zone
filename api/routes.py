@@ -14,7 +14,6 @@ from cricket_api.client import (
     get_live_scores,
     search_series,
     get_series_info,
-    get_all_matches,
     search_players,
     get_player_info,
     is_india_match,

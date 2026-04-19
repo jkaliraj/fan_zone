@@ -777,10 +777,6 @@ async function loadTeamInfo(teamCode) {
     for (let i = 0; i < allChips.length; i++) {
         allChips[i].classList.remove('team-chip-active');
     }
-    const allBtns = document.querySelectorAll('.team-card-btn, .team-btn');
-    for (let i = 0; i < allBtns.length; i++) {
-        allBtns[i].classList.remove('team-card-btn-active', 'team-btn-active');
-    }
     const activeBtn = document.querySelector('[data-team="' + teamCode + '"]');
     if (activeBtn) {
         activeBtn.classList.add('team-chip-active');
